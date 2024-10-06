@@ -29,7 +29,7 @@ db.connect((err) => {
 
 // // Routes
 app.use('/api/tasks', require('./routes/tasks'));
-app.use('/api/sprints', require('./routes/sprints'));
+app.use('/api/sprints', require('./routes/sprints.js'));
 app.use('/api/members', require('./routes/members'));
 
 app.listen(port, () => {
