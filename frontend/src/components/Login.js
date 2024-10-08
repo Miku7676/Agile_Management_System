@@ -13,7 +13,7 @@ function Login() {
       password
     };
 
-    axios.post('http://localhost:5000/api/members/login', loginData)
+    axios.post('http://localhost:5000/api/users/login', loginData)
       .then(response => {
         console.log('Login successful:', response.data);
         // Optionally, store token or user info in state/local storage and redirect

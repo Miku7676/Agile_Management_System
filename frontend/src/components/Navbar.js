@@ -52,6 +52,8 @@ function Navbar() {
           <NavLink to="/tasks">Tasks</NavLink>
           <NavLink to="/sprints">Sprints</NavLink>
           <NavLink to="/users">Users</NavLink>
+          <NavLink to="/login">Login</NavLink>
+          <NavLink to="/signup">SignUp</NavLink>
         </div>
       </div>
     </nav>

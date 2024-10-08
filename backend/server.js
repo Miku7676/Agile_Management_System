@@ -30,7 +30,7 @@ db.connect((err) => {
 // // Routes
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/sprints', require('./routes/sprints.js'));
-app.use('/api/members', require('./routes/members'));
+app.use('/api/users', require('./routes/users.js'));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
