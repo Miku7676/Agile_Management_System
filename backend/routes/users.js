@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; // Define your J
 
 // Fetch all members
 router.get('/', (req, res) => {
-  db.query('SELECT * FROM members', (err, results) => {
+  db.query('SELECT * FROM user', (err, results) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -22,7 +22,7 @@ router.post('/login', (req, res) => {
   const { email, password } = req.body;
 
   // Fetch the user by email
-  db.query('SELECT * FROM members WHERE email = ?', [email], (err, results) => {
+  db.query('SELECT * FROM user WHERE email = ?', [email], (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Database error' });
     }
@@ -31,12 +31,12 @@ router.post('/login', (req, res) => {
 
       return res.status(401).json({ error: 'Invalid email or password'});
     }
-
+    
     const user = results[0];
 
     // Compare the plain password
-    if (password !== user.password) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+    if (password !== user.PASSWORD) {
+      return res.status(401).json({ error: `Invalid email or password` });
     }
 
     // Generate a JWT token if login is successful
@@ -61,7 +61,7 @@ router.post('/signup', (req, res) => {
 
   // Insert user into the database without hashing the password
   db.query(
-    'INSERT INTO members (userid, username, email, password) VALUES (?, ?, ?, ?)', // Make sure the column names match your database schema
+    'INSERT INTO user (user_id, username, email, password) VALUES (?, ?, ?, ?)', // Make sure the column names match your database schema
     [userid, username, email, password], // Use the plain password
     (err, result) => {
       if (err) {
