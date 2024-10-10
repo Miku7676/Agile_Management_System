@@ -48,8 +48,8 @@ router.post('/', verifyToken, (req, res) => {
     }
     console.log('Project created successfully:', result);
     
-    // Add the creator to the project_works_on table
-    const addCreatorQuery = 'INSERT INTO `project_works_on` (USER_ID, PROJECT_ID) VALUES (?, ?)';
+    // Add the creator as a Scrum Master to the project_works_on table
+    const addCreatorQuery = 'INSERT INTO `project_works_on` (USER_ID, PROJECT_ID, ROLE) VALUES (?, ?, ?)';
     db.query(addCreatorQuery, [req.userId, projectId, 'Scrum Master'], (err, result) => {
       if (err) {
         console.error('Database error:', err);
@@ -61,133 +61,104 @@ router.post('/', verifyToken, (req, res) => {
   });
 });
 
+
 // Join an existing project
 router.post('/join', verifyToken, (req, res) => {
-    console.log('POST request to join project received:', req.body);
-    const { projectId } = req.body;
-    const userId = req.userId;
-    const db = req.app.get('db');
-  
-    if (!projectId) {
-      console.log('Missing required fields');
-      return res.status(400).json({ error: 'Project ID is required' });
+  console.log('POST request to join project received:', req.body);
+  const { projectId } = req.body;
+  const userId = req.userId;
+  const db = req.app.get('db');
+
+  if (!projectId) {
+    console.log('Missing required fields');
+    return res.status(400).json({ error: 'Project ID is required' });
+  }
+
+  // Check if the project exists
+  const checkProjectQuery = 'SELECT * FROM `project` WHERE PROJECT_ID = ?';
+  db.query(checkProjectQuery, [projectId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to check project existence' });
     }
-  
-    // Check if the project exists
-    const checkProjectQuery = 'SELECT * FROM `project` WHERE PROJECT_ID = ?';
-    db.query(checkProjectQuery, [projectId], (err, results) => {
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Check if the user is already a member of the project
+    const checkMembershipQuery = 'SELECT * FROM `project_works_on` WHERE USER_ID = ? AND PROJECT_ID = ?';
+    db.query(checkMembershipQuery, [userId, projectId], (err, membershipResults) => {
       if (err) {
         console.error('Database error:', err);
-        return res.status(500).json({ error: 'Failed to check project existence' });
+        return res.status(500).json({ error: 'Failed to check membership' });
       }
-  
-      if (results.length === 0) {
-        return res.status(404).json({ error: 'Project not found' });
+
+      if (membershipResults.length > 0) {
+        return res.status(409).json({ error: 'User is already a member of this project' });
       }
-  
-      // Check if the user is already a member of the project
-      const checkMembershipQuery = 'SELECT * FROM `project_works_on` WHERE USER_ID = ? AND PROJECT_ID = ?';
-      db.query(checkMembershipQuery, [userId, projectId], (err, membershipResults) => {
+
+      // Add the user as a Scrum Member to the project_works_on table
+      const joinProjectQuery = 'INSERT INTO `project_works_on` (USER_ID, PROJECT_ID, ROLE) VALUES (?, ?, ?)';
+      db.query(joinProjectQuery, [userId, projectId, 'Scrum Member'], (err, result) => {
         if (err) {
           console.error('Database error:', err);
-          return res.status(500).json({ error: 'Failed to check membership' });
+          return res.status(500).json({ error: 'Failed to join project' });
         }
-  
-        // If user is already a member, return the user list and Scrum Master info
-        if (membershipResults.length > 0) {
-          const membersQuery = `
-            SELECT u.USER_ID, u.USERNAME
-            FROM USER u 
-            JOIN PROJECT_WORKS_ON pwo ON u.USER_ID = pwo.USER_ID 
-            WHERE pwo.PROJECT_ID = ?
-          `;
-          
-          // Get project members
-          db.query(membersQuery, [projectId], (err, memberResults) => {
-            if (err) {
-              console.error('Database error:', err);
-              return res.status(500).json({ error: 'Failed to fetch project members' });
-            }
-  
-            // Get Scrum Master information
-            const scrumMasterQuery = 'SELECT SCRUM_MASTER FROM `project` WHERE PROJECT_ID = ?';
-            db.query(scrumMasterQuery, [projectId], (err, scrumMasterResults) => {
-              if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Failed to fetch Scrum Master' });
-              }
-  
-              if (scrumMasterResults.length > 0) {
-                const scrumMasterId = scrumMasterResults[0].SCRUM_MASTER;
-                res.status(200).json({ message: 'User is already a member of this project', members: memberResults, scrumMasterId });
-              } else {
-                res.status(200).json({ message: 'User is already a member of this project', members: memberResults });
-              }
-            });
-          });
-        } else {
-          // Add the user to the project_works_on table
-          const joinProjectQuery = 'INSERT INTO `project_works_on` (USER_ID, PROJECT_ID) VALUES (?, ?)';
-          db.query(joinProjectQuery, [userId, projectId], (err, result) => {
-            if (err) {
-              console.error('Database error:', err);
-              return res.status(500).json({ error: 'Failed to join project' });
-            }
-            res.status(200).json({ message: 'Successfully joined project', projectId });
-          });
-        }
+        res.status(200).json({ message: 'Successfully joined project', projectId });
       });
     });
   });
+});
+
   
 // Get a specific project by ID
 router.get('/:projectId', verifyToken, (req, res) => {
-    console.log('GET request for project received. Project ID:', req.params.projectId);
-    const db = req.app.get('db');
-    const projectId = req.params.projectId;
-  
-    // Query to get project details
-    const projectQuery = 'SELECT * FROM `project` WHERE PROJECT_ID = ?';
-    
-    // Query to get project members
-    const membersQuery = `
-      SELECT u.USER_ID, u.USERNAME
-      FROM USER u 
-      JOIN PROJECT_WORKS_ON pwo ON u.USER_ID = pwo.USER_ID 
-      WHERE pwo.PROJECT_ID = ?
-    `;
-  
-    console.log('Executing project query:', projectQuery, [projectId]);
-    db.query(projectQuery, [projectId], (err, projectResults) => {
+  console.log('GET request for project received. Project ID:', req.params.projectId);
+  const db = req.app.get('db');
+  const projectId = req.params.projectId;
+
+  // Query to get project details along with the Scrum Master's name
+  const projectQuery = `
+    SELECT p.*, u.USERNAME as SCRUM_MASTER_NAME 
+    FROM project p
+    JOIN user u ON p.SCRUM_MASTER = u.USER_ID
+    WHERE p.PROJECT_ID = ?;
+  `;
+
+  // Query to get project members
+  const membersQuery = `
+    SELECT u.USER_ID, u.USERNAME 
+    FROM USER u 
+    JOIN PROJECT_WORKS_ON pwo ON u.USER_ID = pwo.USER_ID 
+    WHERE pwo.PROJECT_ID = ?;
+  `;
+
+  db.query(projectQuery, [projectId], (err, projectResults) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch project details' });
+    }
+
+    if (projectResults.length === 0) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    const project = projectResults[0];
+
+    db.query(membersQuery, [projectId], (err, memberResults) => {
       if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({ error: 'Failed to fetch project details' });
+        console.error('Database error while fetching members:', err);
+        return res.status(500).json({ error: 'Failed to fetch project members' });
       }
-  
-      console.log('Project query results:', projectResults);
-  
-      if (projectResults.length === 0) {
-        console.log('Project not found');
-        return res.status(404).json({ error: 'Project not found' });
-      }
-  
-      const project = projectResults[0];
-  
-      console.log('Executing members query:', membersQuery, [projectId]);
-      db.query(membersQuery, [projectId], (err, memberResults) => {
-        if (err) {
-          console.error('Database error while fetching members:', err);
-          return res.status(500).json({ error: 'Failed to fetch project members' });
-        }
-  
-        console.log('Members query results:', memberResults);
-  
-        project.members = memberResults;
-        console.log('Sending response:', project);
-        res.json(project);
-      });
+
+      // Include members in the project object
+      project.members = memberResults;
+      res.json(project);
     });
   });
+});
+
   
 
 module.exports = router;

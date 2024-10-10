@@ -9,6 +9,7 @@ function Dashboard() {
   const [error, setError] = useState('');
   const [isJoining, setIsJoining] = useState(false);
   const [userId, setUserId] = useState('');
+  const [projectDetails, setProjectDetails] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +21,28 @@ function Dashboard() {
     }
   }, []);
 
+  const fetchProjectDetails = async (projectId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/project/${projectId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch project details');
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching project details:', error);
+      return null;
+    }
+  };
+  
   const handleCreateOrJoinGroup = async (e) => {
     e.preventDefault();
     setError('');
@@ -38,13 +61,17 @@ function Dashboard() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          projectId: groupId,
-          userId: userId,
-          role: isJoining ? 'Scrum Member' : 'Scrum Master' // Adjust the role accordingly
+          projectId: groupId,      // For joining, it sends projectId
+          name: groupName,         // For creating, it sends the project name
+          scrumMaster: scrumMasterId, // For creating, it sends the scrum master ID
         }),
       };
   
-      response = await fetch('/api/project/join', requestOptions);
+      if (isJoining) {
+        response = await fetch('/api/project/join', requestOptions);
+      } else {
+        response = await fetch('/api/project', requestOptions);
+      }
   
       if (!response.ok) {
         const errorText = await response.text();
@@ -52,6 +79,13 @@ function Dashboard() {
       }
   
       const data = await response.json();
+      const projectDetails = await fetchProjectDetails(data.projectId);
+      
+      if (projectDetails) {
+        setProjectDetails(projectDetails);
+        console.log('Project details:', projectDetails);
+      }
+  
       navigate(`/Project/${data.projectId}`);
     } catch (error) {
       console.error('Error creating/joining group:', error);
@@ -60,7 +94,6 @@ function Dashboard() {
   
     setShowModal(false);
   };
-  
 
   return (
     <div className="p-6">
@@ -120,6 +153,22 @@ function Dashboard() {
               </form>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Display project details after fetching */}
+      {projectDetails && (
+        <div className="mt-6">
+          <h2 className="text-2xl font-bold mb-4">Project Details</h2>
+          <p><strong>Project Name:</strong> {projectDetails.NAME}</p>
+          <p><strong>Project ID:</strong> {projectDetails.PROJECT_ID}</p>
+          <p><strong>Scrum Master:</strong> {projectDetails.SCRUM_MASTER}</p>
+          <h3 className="text-xl font-bold mt-4">Members:</h3>
+          <ul className="list-disc ml-5 mt-2">
+            {projectDetails.members.map((member) => (
+              <li key={member.USER_ID}>{member.USERNAME} (User ID: {member.USER_ID})</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
