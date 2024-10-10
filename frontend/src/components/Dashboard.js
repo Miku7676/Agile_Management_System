@@ -10,6 +10,8 @@ function Dashboard() {
   const [isJoining, setIsJoining] = useState(false);
   const [userId, setUserId] = useState('');
   const [projectDetails, setProjectDetails] = useState(null);
+  const [userProjects, setUserProjects] = useState([]);
+  const [showProjects, setShowProjects] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,29 +32,53 @@ function Dashboard() {
           'Authorization': `Bearer ${token}`,
         },
       });
-      
+  
       if (!response.ok) {
         throw new Error('Failed to fetch project details');
       }
   
-      const data = await response.json();
-      return data;
+      const projectDetails = await response.json();
+      return projectDetails;
     } catch (error) {
       console.error('Error fetching project details:', error);
       return null;
     }
   };
   
+  const fetchUserProjects = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/project/projects', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch user projects');
+      }
+  
+      const data = await response.json();
+      setProjectDetails(data); // Assuming you set the projects here
+    } catch (error) {
+      console.error('Error fetching user projects:', error);
+      setError(`Failed to fetch user projects: ${error.message}`);
+    }
+  };
+  
+
   const handleCreateOrJoinGroup = async (e) => {
     e.preventDefault();
     setError('');
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found in localStorage. Please log in again.');
       }
-  
+
       let response;
       const requestOptions = {
         method: 'POST',
@@ -66,32 +92,31 @@ function Dashboard() {
           scrumMaster: scrumMasterId, // For creating, it sends the scrum master ID
         }),
       };
-  
+
       if (isJoining) {
         response = await fetch('/api/project/join', requestOptions);
       } else {
         response = await fetch('/api/project', requestOptions);
       }
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
       }
-  
+
       const data = await response.json();
       const projectDetails = await fetchProjectDetails(data.projectId);
       
       if (projectDetails) {
         setProjectDetails(projectDetails);
-        console.log('Project details:', projectDetails);
       }
-  
+
       navigate(`/Project/${data.projectId}`);
     } catch (error) {
       console.error('Error creating/joining group:', error);
       setError(`Failed to create/join group: ${error.message}`);
     }
-  
+
     setShowModal(false);
   };
 
@@ -104,6 +129,9 @@ function Dashboard() {
       </button>
       <button onClick={() => { setShowModal(true); setIsJoining(true); }} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4">
         Join Existing Project
+      </button>
+      <button onClick={fetchUserProjects} className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mb-4">
+        Show My Projects
       </button>
 
       {error && <p className="text-red-500 mt-2">{error}</p>}
@@ -156,6 +184,20 @@ function Dashboard() {
         </div>
       )}
 
+      {/* Display user's projects */}
+      {showProjects && (
+        <div className="mt-6">
+          <h2 className="text-2xl font-bold mb-4">My Projects</h2>
+          <ul className="list-disc ml-5 mt-2">
+            {userProjects.map((project) => (
+              <li key={project.PROJECT_ID}>
+                {project.NAME} (Scrum Master: {project.SCRUM_MASTER_NAME})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Display project details after fetching */}
       {projectDetails && (
         <div className="mt-6">
@@ -163,10 +205,12 @@ function Dashboard() {
           <p><strong>Project Name:</strong> {projectDetails.NAME}</p>
           <p><strong>Project ID:</strong> {projectDetails.PROJECT_ID}</p>
           <p><strong>Scrum Master:</strong> {projectDetails.SCRUM_MASTER}</p>
-          <h3 className="text-xl font-bold mt-4">Members:</h3>
+          <h3 className="text-xl font-bold mt-4">Team Members:</h3>
           <ul className="list-disc ml-5 mt-2">
-            {projectDetails.members.map((member) => (
-              <li key={member.USER_ID}>{member.USERNAME} (User ID: {member.USER_ID})</li>
+            {projectDetails.teamMembers.map((member) => (
+              <li key={member.USER_ID}>
+                {member.USERNAME} (Role: {member.ROLE})
+              </li>
             ))}
           </ul>
         </div>

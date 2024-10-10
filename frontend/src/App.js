@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-// import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import TaskList from './components/TaskList';
 import SprintList from './components/SprintList';
@@ -9,20 +8,67 @@ import Login from './components/Login'; // Import Login component
 import AppLayout from './components/AppLayout ';
 import SignUp from './components/SignUp';
 import Project from './components/Project';
+import ProtectedRoute from './components/ProtectedRoute'; // For protecting routes
+import AppLayout from './components/AppLayout'; // This should NOT contain a <Router>
+import { useNavigate } from 'react-router-dom';
 
 function App() {
+  // const nav = useNavigate()
+  // Clear token when app is started or refreshed
+  useEffect(() => {
+    localStorage.removeItem('token');
+    // nav('/login')
+  }, []);
+
   return (
+    // Wrap your whole app in a single Router
     <Router>
       <div className="App">
+        {/* No Router inside AppLayout */}
         <AppLayout>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/tasks" element={<TaskList />} />
-            <Route path="/sprints" element={<SprintList />} />
-            <Route path="/users" element={<UserList />} />
-            <Route path="/login" element={<Login />} /> {/* Add Login route */}
-            <Route path="/signup" element={<SignUp />} /> {/* Add Login route */}
-            <Route path="/Project/:projectId" element={<Project />}/>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <ProtectedRoute>
+                  <TaskList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sprints"
+              element={
+                <ProtectedRoute>
+                  <SprintList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <UserList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Project/:projectId"
+              element={
+                <ProtectedRoute>
+                  <Project />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </AppLayout>
       </div>

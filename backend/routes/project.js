@@ -111,6 +111,39 @@ router.post('/join', verifyToken, (req, res) => {
   });
 });
 
+// Get all projects that a user is a part of
+router.get('/projects', verifyToken, (req, res) => {
+  const userId = req.userId;
+  const db = req.app.get('db');
+
+  const query = `
+    SELECT 
+  p.PROJECT_ID, 
+  p.NAME, 
+  u.USERNAME AS MEMBER_NAME,
+  sm.USERNAME AS SCRUM_MASTER_NAME
+FROM 
+  project p
+JOIN 
+  project_works_on pwo ON p.PROJECT_ID = pwo.PROJECT_ID
+JOIN 
+  user u ON pwo.USER_ID = u.USER_ID
+LEFT JOIN 
+  user sm ON p.SCRUM_MASTER = sm.USER_ID
+WHERE 
+  pwo.USER_ID = ?;
+
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+    res.json(results);
+  });
+});
+
   
 // Get a specific project by ID
 router.get('/:projectId', verifyToken, (req, res) => {
