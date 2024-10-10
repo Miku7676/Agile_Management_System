@@ -8,6 +8,7 @@ import UserList from './components/UserList';
 import Login from './components/Login'; // Import Login component
 import AppLayout from './components/AppLayout';
 import SignUp from './components/SignUp';
+import Project from './components/Project';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/users" element={<UserList />} />
             <Route path="/login" element={<Login />} /> {/* Add Login route */}
             <Route path="/signup" element={<SignUp />} /> {/* Add Login route */}
+            <Route path="/Project/:projectId" element={<Project />}/>
           </Routes>
         </AppLayout>
       </div>

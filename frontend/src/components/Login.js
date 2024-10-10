@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Hook to redirect the user after login
+  const [error, setError] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -15,15 +17,22 @@ function Login() {
 
     axios.post('http://localhost:5000/api/users/login', loginData)
       .then(response => {
+        const token = response.data.token;  // Assuming your backend returns the token in this field
         console.log('Login successful:', response.data);
-        // Optionally, store token or user info in state/local storage and redirect
+        
+        // Store the token in localStorage
+        localStorage.setItem('token', token);
+
+        // Optionally, you can store user info or other details from the response if needed
+
+        // Redirect the user to the dashboard or another page
+        navigate('/Dashboard');
       })
       .catch(error => {
-        // Show alert for errors
         if (error.response && error.response.data.error) {
-          alert(error.response.data.error);
+          setError(error.response.data.error);
         } else {
-          alert('An unexpected error occurred. Please try again later.');
+          setError('An unexpected error occurred. Please try again later.');
         }
       });
   };
@@ -31,18 +40,29 @@ function Login() {
   return (
     <div>
       <h2>Login</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <div>
           <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input 
+            type="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+          />
         </div>
         <div>
           <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input 
+            type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+          />
         </div>
         <button type="submit">Login</button>
       </form>
-      <p>Don't have an account? <Link to="/users">Register Here</Link></p>
+      <p>Don't have an account? <Link to="/signup">Register Here</Link></p>
     </div>
   );
 }
