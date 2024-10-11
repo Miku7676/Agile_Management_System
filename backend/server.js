@@ -32,24 +32,24 @@ app.set('db', db);
 // Routes
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/sprints', require('./routes/sprints'));
-app.use('/api/members', require('./routes/users'));
+// app.use('/api/members', require('./routes/users'));
 app.use('/api/project', require('./routes/project'));
 app.use('/api/users', require('./routes/users'));
 
 
 
-console.log('Registered routes:');
-app._router.stack.forEach(function(r){
-  if (r.route && r.route.path){
-    console.log(r.route.path)
-  } else if(r.name === 'router'){
-    r.handle.stack.forEach(function(nestedRoute){
-      if(nestedRoute.route){
-        console.log(r.regexp, nestedRoute.route.path);
-      }
-    })
-  }
-});
+// console.log('Registered routes:');
+// app._router.stack.forEach(function(r){
+//   if (r.route && r.route.path){
+//     console.log(r.route.path)
+//   } else if(r.name === 'router'){
+//     r.handle.stack.forEach(function(nestedRoute){
+//       if(nestedRoute.route){
+//         console.log(r.regexp, nestedRoute.route.path);
+//       }
+//     })
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -26,6 +26,8 @@ function Login() {
 
         // Redirect the user to the dashboard
         navigate('/');
+        window.location.reload(); // PLEASE CHANGE THIS, USE SOME OTHER METHOD IT LOOKS TRIPPY MAN
+
       })
       .catch((error) => {
         if (error.response && error.response.data.error) {
