@@ -1,5 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, {useEffect,useState} from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { UserValue } from './contexts/UserContext';
+
 
 export const NAVBAR_HEIGHT = 100; // Matching the paddingTop in AppLayout
 
@@ -43,19 +45,40 @@ const linkStyle = {
 };
 
 function Navbar() {
+  const [token,setToken] = useState(localStorage.getItem('token'));
+  const location = useLocation();
+  const {userId} = UserValue();
+
+  useEffect(()=> {
+    setToken(localStorage.getItem('token'))
+  }, [location])
+  const logOut = ()=>{
+    (token && localStorage.removeItem('token'));
+    console.log("logout")
+  };
+  
   return (
     <nav style={navStyle}>
       <div style={containerStyle}>
         <img style={logoStyle} src="/api/placeholder/32/32" alt="Logo" />
-        <div style={linkContainerStyle}>
-          <NavLink to="/">Dashboard</NavLink>
-          <NavLink to="/tasks">Tasks</NavLink>
-          <NavLink to="/sprints">Sprints</NavLink>
-          <NavLink to="/users">Users</NavLink>
-          <NavLink to="/login">Login</NavLink>
-          <NavLink to="/signup">SignUp</NavLink>
-        </div>
+        
+          {token ? (
+            <div style={linkContainerStyle}>
+              <NavLink to="/">Dashboard</NavLink>
+              <NavLink to="/tasks">Tasks</NavLink>
+              <NavLink to="/sprints">Sprints</NavLink>
+              <NavLink to="/users">Users</NavLink>
+              <NavLink to="/login"><div onClick={logOut}>Logout</div></NavLink>
+              <NavLink >{userId}</NavLink>
+            </div>
+          ):(
+            <div style={linkContainerStyle}>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/signup">SignUp</NavLink>
+            </div>
+          )}          
       </div>
+      
     </nav>
   );
 }
