@@ -21,7 +21,39 @@ const verifyToken = (req, res, next) => {
       next();
     });
   };
-   
+
+// Get all projects that a user is a part of
+router.get('/', verifyToken, (req, res) => {
+  const userId = req.userId;
+  // const query = `
+  //   SELECT 
+  //     p.PROJECT_ID, 
+  //     p.NAME
+  //   FROM 
+  //     project p
+  //   WHERE 
+  //     p.PROJECT_MANAGER = ?;
+
+  // `;
+  const query = `
+    SELECT
+      p.PROJECT_ID,
+      p.NAME,
+      w.ROLE
+    FROM
+      project p
+    JOIN project_works_on w on p.PROJECT_ID = w.PROJECT_ID
+    WHERE w.USER_ID = ?;
+  `
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+    res.json(results);
+  });
+});
   
 
 // Create a new project
@@ -73,38 +105,32 @@ router.post('/create', verifyToken, (req, res) => {
   });
 });
 
-
-// Get all projects that a user is a part of
-router.get('/', verifyToken, (req, res) => {
+router.post('/join', verifyToken, (req,res) => {
+  console.log('POST request to join project received:', req.body);
+  const { projectId } = req.body;
   const userId = req.userId;
-  // const query = `
-  //   SELECT 
-  //     p.PROJECT_ID, 
-  //     p.NAME
-  //   FROM 
-  //     project p
-  //   WHERE 
-  //     p.PROJECT_MANAGER = ?;
+  
+  const projectquery = `CALL addUserToProject(?,?);`
 
-  // `;
-  const query = `
-    SELECT
-      p.PROJECT_ID,
-      p.NAME
-    FROM
-      project p
-    JOIN project_works_on w on p.PROJECT_ID = w.PROJECT_ID
-    WHERE w.USER_ID = ?;
-  `
-
-  db.query(query, [userId], (err, results) => {
+  db.query(projectquery, [projectId,userId], (err, results) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to fetch projects' });
     }
-    res.json(results);
+    const [status] = results[0];
+    if (status.opstatus == 1) {
+      console.log("invalid project id")
+      return res.status(406).send("Invalid project ID (Project does not exist)")
+    }
+    if (status.opstatus == 2){
+      console.log("user already exists for the project");
+      return res.status(406).send("User exists in the project")
+    }
+    res.status(201).json({message: "User joined successfully"});
+    console.log(results);
   });
-});
+})
+
 
   
 
@@ -112,3 +138,5 @@ router.get('/', verifyToken, (req, res) => {
   
 
 module.exports = router;
+
+

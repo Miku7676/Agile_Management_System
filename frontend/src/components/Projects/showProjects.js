@@ -22,7 +22,7 @@ function ShowProjects() {
         }
         fetchUserProjects();
         
-    }, [])
+    }, []) 
   return (
     <div>
         <h1>Projects [-show]</h1>
@@ -31,7 +31,7 @@ function ShowProjects() {
             <ul>
                 {userProjects.map(project => (
                 <li key={project.PROJECT_ID}>
-                    {project.PROJECT_ID} - {project.NAME}
+                    {project.PROJECT_ID} - {project.NAME} - {project.ROLE}
                 </li>
                 ))}
             </ul>
