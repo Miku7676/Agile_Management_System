@@ -22,19 +22,17 @@ const verifyToken = (req, res, next) => {
     });
   };
 
+function generateUniqueId() {
+  const currentTime = Date.now() % 10000; // Get milliseconds and keep last 6 digits
+  const randomNumber = Math.floor(Math.random() * 10000);
+  const uniqueId = (currentTime + randomNumber) % 10000;
+  return uniqueId.toString().padStart(4, '0'); // Ensure it's a string of 6 digits
+}
+
 // Get all projects that a user is a part of
 router.get('/', verifyToken, (req, res) => {
   const userId = req.userId;
-  // const query = `
-  //   SELECT 
-  //     p.PROJECT_ID, 
-  //     p.NAME
-  //   FROM 
-  //     project p
-  //   WHERE 
-  //     p.PROJECT_MANAGER = ?;
 
-  // `;
   const query = `
     SELECT
       p.PROJECT_ID,
@@ -51,7 +49,7 @@ router.get('/', verifyToken, (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to fetch projects' });
     }
-    res.json(results);
+    res.status(200).json(results);
   });
 });
   
@@ -69,10 +67,10 @@ router.post('/create', verifyToken, (req, res) => {
   }
 
   // Generate a random 4-digit group ID
-  const projectId = Math.floor(1000 + Math.random() * 9000); // GOTTA CHANGE THIS
+  const projectId = generateUniqueId();
 
-  // Insert project into the database
-  if (description){
+  // check if the description is empty and formats the query string
+  if (description){ 
     query = 'INSERT INTO `project` (PROJECT_ID, NAME, DESCRIPTION, PROJECT_MANAGER, SCRUM_MASTER) VALUES (?, ?, ?, ?, ?)';
     value = [projectId, name, description, projectManager,scrumMasterId]
   }
@@ -131,11 +129,32 @@ router.post('/join', verifyToken, (req,res) => {
   });
 })
 
+router.get('/:project_Id', verifyToken, (req,res) => {
+  const projectId = req.params.project_Id;
 
-  
+
+  const projectQuery = `call fetchProjectDetails(?)`
+
+  db.query(projectQuery, [projectId], (err, projectResults) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch project details' });
+    }
+
+    if (!projectResults.length > 2){
+      console.error("project does not exist")
+      return res.status(404).send("Invalid Project Id")
+    }
+    const [projectDetails] = projectResults[0]
+    const MemberDetails = projectResults[1]
+    const SprintDetails = projectResults[2]
+
+    res.status(200).json({projectDetails : projectDetails, MemberDetails : MemberDetails, SprintDetails : SprintDetails});
+   
+  });
+})
 
 
-  
 
 module.exports = router;
 

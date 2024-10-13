@@ -18,7 +18,22 @@ BEGIN
 END$$
 
 
-
-
+-- fetch user project details
+USE `project_management_system`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `fetchProjectDetails`(IN projId INT)
+BEGIN
+	DECLARE opstatus INT;
+	IF NOT checkProject(projId) THEN
+		SET opstatus = 1; -- code 1 : project doesnot exist
+	ELSE
+        SELECT * FROM project where project_id = projId;
+        SELECT USER_ID, ROLE from project_works_on where project_id = projId AND ROLE = 'Member';
+		-- select 2 as 'sprints';
+        SELECT SPRINT_ID, NAME, START_DT, END_DT FROM sprint WHERE PROJECT_ID = projId;
+		-- select 3 as 'tasks'; to be done
+        set opstatus = 0;
+    END IF;
+    SELECT opstatus;
+END$$
 
 DELIMITER ;
