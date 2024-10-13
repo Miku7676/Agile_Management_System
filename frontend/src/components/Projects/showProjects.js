@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import "./showProject.css"
 
-function ShowProjects() {
+function ShowProjects({ onProjectSelect }) {
     const [userProjects,setUserProjects] = useState([])
 
     useEffect( () => {
@@ -23,6 +24,7 @@ function ShowProjects() {
         fetchUserProjects();
         
     }, [])
+
   return (
     <div>
         <h1>Projects [-show]</h1>
@@ -30,8 +32,8 @@ function ShowProjects() {
         {userProjects.length ? (
             <ul>
                 {userProjects.map(project => (
-                <li key={project.PROJECT_ID}>
-                    {project.PROJECT_ID} - {project.NAME}
+                <li key={project.PROJECT_ID} onClick={()=> {onProjectSelect(project.PROJECT_ID)}} className='project-item'>
+                    {project.PROJECT_ID} - {project.NAME} - {project.ROLE}
                 </li>
                 ))}
             </ul>
