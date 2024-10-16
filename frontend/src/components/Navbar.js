@@ -24,7 +24,7 @@ const containerStyle = {
 };
 
 const logoStyle = {
-  height: '32px',
+  height: '70px',
   width: 'auto',
   marginRight: '20px', // Add some space between logo and links
 };
@@ -54,14 +54,16 @@ function Navbar() {
   }, [location])
   const logOut = ()=>{
     (token && localStorage.removeItem('token'));
+    setToken(null);
     console.log("logout")
   };
   
   return (
     <nav style={navStyle}>
       <div style={containerStyle}>
-        <img style={logoStyle} src="/api/placeholder/32/32" alt="Logo" />
-        
+        <Link to="/">
+          <img style={logoStyle} src="/managepro.png" alt="Logo" />
+        </Link>
           {token ? (
             <div style={linkContainerStyle}>
               <NavLink to="/">Dashboard</NavLink>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import 'D:/DBMS/project/project_management_system/frontend/src/components/css/CreateProject.css'; // Adjusted path
+import '../css/CreateProject.css'; // Adjusted path
 
 function CreateProject() {
   const [projectName, setProjectName] = useState('');
@@ -16,7 +16,7 @@ function CreateProject() {
         alert('No token found in localStorage. Please log in again.');
         window.location.reload();
       }
-
+      // eslint-disable-next-line
       const response = await axios.post(
         'http://localhost:5000/api/project/create',
         {

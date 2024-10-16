@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import 'D:/DBMS/project/project_management_system/frontend/src/components/css/ShowProject.css'; // Make sure the path is correct based on your project structure
+import '../css/ShowProject.css'; // Make sure the path is correct based on your project structure
 
 function ShowProjects({ onProjectSelect }) {
   const [userProjects, setUserProjects] = useState([]);

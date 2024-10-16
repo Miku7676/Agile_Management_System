@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import 'D:/DBMS/project/project_management_system/frontend/src/components/css/JoinProject.css'; // Adjusted path
+import '../css/JoinProject.css'; // Adjusted path
 
 function JoinProject() {
   const [projectId, setProjectId] = useState('');
@@ -15,6 +15,7 @@ function JoinProject() {
         window.location.reload();
       }
 
+      // eslint-disable-next-line
       const response = await axios.post(
         'http://localhost:5000/api/project/join',
         { projectId },

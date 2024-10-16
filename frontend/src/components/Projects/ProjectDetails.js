@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import 'D:/DBMS/project/project_management_system/frontend/src/components/css/ProjectDetails.css'
+import '../css/ProjectDetails.css'
 
 function ProjectDetails({ projectId }) {
   const [projectDetails, setProjectDetails] = useState(null);
