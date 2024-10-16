@@ -1,0 +1,60 @@
+.project-details {
+    background-color: white;      /* White background */
+    padding: 20px;                  /* Padding around the content */
+    border-radius: 8px;             /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    margin: 20px;                   /* Margin for spacing */
+    width:100%;              /* Maximum width */
+    flex-grow: 1;                   /* Allow it to grow within flex container */
+    font-family: Arial, sans-serif; /* Set a clean font */
+    color: #333;  
+    text-align: left;                  /* Darker text for better visibility */
+}
+
+.loading, .error {
+    text-align: left;             /* Center text */
+    margin: 20px;                  /* Space around the text */
+    font-size: 1.2rem;              /* Font size */
+    color: #888;                    /* Gray color */
+}
+
+h2 {
+    font-size: 1.8rem;              /* Title font size */
+    margin-bottom: 10px;            /* Space below title */
+}
+
+h3 {
+    margin-top: 20px;               /* Space above h3 elements */
+    margin-bottom: 10px;            /* Space below h3 elements */
+    font-size: 1.4rem;              /* Slightly larger h3 */
+}
+
+p {
+    margin: 5px 0;                  /* Margin for paragraphs */
+    font-size: 1rem;                /* Standard font size */
+}
+
+ul {
+    list-style-type: disc;          /* Bullet points for lists */
+    padding-left: 20px;             /* Indent for list items */
+}
+
+li {
+    margin-bottom: 5px;             /* Space between list items */
+    font-size: 0.95rem;             /* Slightly smaller font for list items */
+}
+
+@media (max-width: 600px) {
+    .project-details {
+        max-width: 90%;             /* Full width on smaller screens */
+        padding: 15px;              /* Reduced padding for smaller screens */
+    }
+
+    h2 {
+        font-size: 1.5rem;          /* Adjust title font size */
+    }
+    
+    h3 {
+        font-size: 1.2rem;          /* Adjust h3 font size */
+    }
+}

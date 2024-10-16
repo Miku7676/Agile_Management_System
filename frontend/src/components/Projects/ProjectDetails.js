@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import 'D:/DBMS/project/project_management_system/frontend/src/components/css/ProjectDetails.css'
 
 function ProjectDetails({ projectId }) {
   const [projectDetails, setProjectDetails] = useState(null);
@@ -10,11 +11,11 @@ function ProjectDetails({ projectId }) {
     const fetchProjectDetails = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:5000/api/project/${projectId}`,{
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
+        const response = await axios.get(`http://localhost:5000/api/project/${projectId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
         setProjectDetails(response.data);
       } catch (err) {
@@ -29,21 +30,32 @@ function ProjectDetails({ projectId }) {
     }
   }, [projectId]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   if (!projectDetails) return null;
 
   const { projectDetails: details, MemberDetails, SprintDetails } = projectDetails;
 
   return (
-    <div>
+    <div className="project-details">
       <h2>Project: {details.NAME} ({details.PROJECT_ID})</h2>
-      <p>Description: {details.DESCRIPTION}</p>
-      <p>Start Date: {new Date(details.START_DATE).toLocaleDateString()}</p>
-      <p>End Date: {details.END_DATE ? new Date(details.END_DATE).toLocaleDateString() : 'Not specified' /*have to chamge the date input */}</p>
-      <p>Project Manager: {details.PROJECT_MANAGER}</p>
-      <p>Scrum Master: {details.SCRUM_MASTER}</p>
+      <p style={{ padding: '10px' }}>
+  <strong>Start Date:</strong> {new Date(details.START_DATE).toLocaleDateString()} 
+  <span style={{ margin: '0 10px' }}></span>
+  <strong>End Date:</strong> {details.END_DATE ? new Date(details.END_DATE).toLocaleDateString() : 'Not specified'}
+</p>
+
+<div style={{padding: '10px' }}>
+  <strong>Project Manager:</strong> 
+  <span style={{ margin: '0 10px' }}>{details.PROJECT_MANAGER}</span>
+  <strong>Scrum Master:</strong> 
+  <span>{details.SCRUM_MASTER}</span>
+</div>
+
+
+      <p><strong>Description:</strong> {details.DESCRIPTION}</p>
+
 
       <h3>Members:</h3>
       <ul>

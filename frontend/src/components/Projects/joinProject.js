@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import axios from 'axios';
+import 'D:/DBMS/project/project_management_system/frontend/src/components/css/JoinProject.css'; // Adjusted path
 
 function JoinProject() {
-  const [projectId,setProjectId] = useState('');
+  const [projectId, setProjectId] = useState('');
 
   const handleJoin = async (e) => {
     e.preventDefault();
@@ -11,40 +12,42 @@ function JoinProject() {
       const token = localStorage.getItem('token');
       if (!token) {
         alert('No token found in localStorage. Please log in again.');
-        window.location.reload()
+        window.location.reload();
       }
 
-      const requestOptions = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const response = await axios.post('http://localhost:5000/api/project/join', {
-        projectId : projectId
-      }, requestOptions);
-      console.log(response.data);
-      alert("joined to project successfully")
-      window.location.reload();
-
-    } catch (error) {
-        if (error.status === 406){
-            console.error(error);
-            alert(error.response.data);
+      const response = await axios.post(
+        'http://localhost:5000/api/project/join',
+        { projectId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         }
-        console.error('joining group:', error.message);
+      );
+      
+      alert('Joined project successfully');
+      window.location.reload();
+    } catch (error) {
+      alert('Failed to join project: ' + (error.response?.data || error.message));
     }
-  }
+  };
 
   return (
-    <div>
+    <div className="join-project-form">
       <form onSubmit={handleJoin}>
-            <input type="text" placeholder="project name" value={projectId} required onChange={(e)=>{setProjectId(e.target.value)}} /><br/>
-            <button type='submit'>submit</button>
-        </form>
+        Project ID
+        <input
+          type="text"
+          placeholder="Project ID"
+          value={projectId}
+          onChange={(e) => setProjectId(e.target.value)}
+          required
+        /><br />
+        <button type="submit" className="submit-btn">Join Project</button>
+      </form>
     </div>
-  )
+  );
 }
 
-export default JoinProject
+export default JoinProject;

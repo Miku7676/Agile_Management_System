@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import CreateProject from './Projects/createProject';
+import JoinProject from './Projects/joinProject';
+import './css/Project.css'; // Importing CSS for styling
 
 function Project() {
   const [project, setProject] = useState(null);
   const [error, setError] = useState('');
   const { projectId } = useParams();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -24,29 +29,60 @@ function Project() {
     fetchProject();
   }, [projectId]);
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
-
-  if (!project) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (showCreateModal || showJoinModal) {
+      document.body.classList.add('scroll-lock');
+    } else {
+      document.body.classList.remove('scroll-lock');
+    }
+  }, [showCreateModal, showJoinModal]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">{project.NAME}</h1>
-      <p className="mb-4"><strong>Project ID:</strong> {project.PROJECT_ID}</p>
-      <p className="mb-4"><strong>Scrum Master:</strong> {project.SCRUM_MASTER}</p>
-      
-      <h2 className="text-2xl font-bold mt-6 mb-4">Project Members</h2>
-      {project.members && project.members.length > 0 ? (
-        <ul className="list-disc pl-5">
-          {project.members.map((member, index) => (
-            <li key={index}>{member.USERNAME} ({member.USER_ID})</li>
-          ))}
-        </ul>
+    <div className="project-wrapper">
+      {error ? (
+        <div className="text-red-500">{error}</div>
+      ) : project ? (
+        <>
+          <h1 className="project-title">{project.NAME}</h1>
+          <p className="project-details"><strong>Project ID:</strong> {project.PROJECT_ID}</p>
+          <p className="project-details"><strong>Scrum Master:</strong> {project.SCRUM_MASTER}</p>
+          
+          <h2 className="project-members-title">Project Members</h2>
+          {project.members && project.members.length > 0 ? (
+            <ul className="project-members-list">
+              {project.members.map((member, index) => (
+                <li key={index} className="project-member-item">{member.USERNAME} ({member.USER_ID})</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No members in this project yet.</p>
+          )}
+        </>
       ) : (
-        <p>No members in this project yet.</p>
+        <div className="loading-spinner">Loading...</div>
+      )}
+
+      <div className="buttons-container">
+        <button className="btn create-btn" onClick={() => setShowCreateModal(true)}>Create Project</button>
+        <button className="btn join-btn" onClick={() => setShowJoinModal(true)}>Join Project</button>
+      </div>
+
+      {showCreateModal && (
+        <div className="modal" onClick={() => setShowCreateModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close" onClick={() => setShowCreateModal(false)}>&times;</span>
+            <CreateProject />
+          </div>
+        </div>
+      )}
+
+      {showJoinModal && (
+        <div className="modal" onClick={() => setShowJoinModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close" onClick={() => setShowJoinModal(false)}>&times;</span>
+            <JoinProject />
+          </div>
+        </div>
       )}
     </div>
   );

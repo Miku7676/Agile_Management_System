@@ -1,0 +1,146 @@
+.project-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 40px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+.project-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.project-details {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.project-members-title {
+    font-size: 2rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.project-members-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.project-member-item {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+/* Button Section */
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 20px;
+    text-align: center;
+    border-left: 1px solid #ddd;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.create-btn {
+    background-color: #4CAF50;
+}
+
+.join-btn {
+    background-color: #007BFF;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* Modal styling */
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    width: 500px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Scroll lock */
+.scroll-lock {
+    overflow: hidden;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .project-wrapper {
+        flex-direction: column;
+    }
+
+    .buttons-container {
+        padding-left: 0;
+        margin-top: 20px;
+        border-left: none;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+}
+
+/* Modal fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
