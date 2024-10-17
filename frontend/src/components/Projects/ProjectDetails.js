@@ -46,7 +46,7 @@ function ProjectDetails({ projectId }) {
   <strong>End Date:</strong> {details.END_DATE ? new Date(details.END_DATE).toLocaleDateString() : 'Not specified'}
 </p>
 
-<div style={{padding: '10px' }}>
+<div style={{padding: '10px', display: 'flex', justifyContent:'center'}}>
   <strong>Project Manager:</strong> 
   <span style={{ margin: '0 10px' }}>{details.PROJECT_MANAGER}</span>
   <strong>Scrum Master:</strong> 
