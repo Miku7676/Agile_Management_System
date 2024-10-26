@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import ShowProjects from "./Projects/showProjects";
 import CreateProject from "./Projects/createProject";
 import JoinProject from "./Projects/joinProject";
-import ProjectDetails from './Projects/ProjectDetails';
+// import ProjectDetails from './Projects/ProjectDetails';
 import './css/Dashboard.css';  // Ensure your path is correct
+
 
 function Dashboard() {
   const [create, setCreate] = useState(false);
   const [join, setJoin] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState();
+  // const [selectedProjectId, setSelectedProjectId] = useState();
+  
 
   const handleCreate = () => {
     setCreate(true);
@@ -20,10 +22,10 @@ function Dashboard() {
     setJoin(true);
   };
 
-  const handleProjectId = (projectId) => {
-    setSelectedProjectId(projectId);
-    console.log('Selected Project ID:', projectId);
-  };
+  // const handleProjectId = (projectId) => {
+  //   setSelectedProjectId(projectId);
+  //   console.log('Selected Project ID:', projectId);
+  // };
 
   const closeModal = () => {
     setCreate(false);
@@ -33,7 +35,7 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <div className={create || join ? 'dashboard-content-blur' : 'dashboard-content'}>
-        <ShowProjects onProjectSelect={handleProjectId} />
+        <ShowProjects />
         <div className="button-container">
           <button className="create" onClick={handleCreate}>Create</button>
           <button className="join" onClick={handleJoin}>Join</button>
@@ -41,10 +43,11 @@ function Dashboard() {
       </div>
 
       {/* Project Details Section */}
-      <div className="project">
-        {selectedProjectId && <ProjectDetails projectId={selectedProjectId} />}
-      </div>
+      {/* <div className="project">
+        {selectedProjectId && <ProjectDetails projectId={selectedProjectId} showComments={setComments} />}
+      </div> */}
 
+      
       {/* Modal for Create or Join */}
       {(create || join) && (
         <div className="modal-container" onClick={closeModal}>

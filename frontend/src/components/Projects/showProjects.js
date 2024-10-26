@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../css/ShowProject.css'; // Make sure the path is correct based on your project structure
+import { useNavigate } from 'react-router-dom';
 
-function ShowProjects({ onProjectSelect }) {
+function ShowProjects() {
   const [userProjects, setUserProjects] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProjects = async () => {
@@ -31,7 +33,7 @@ function ShowProjects({ onProjectSelect }) {
           {userProjects.map((project) => (
             <li 
               key={project.PROJECT_ID} 
-              onClick={() => onProjectSelect(project.PROJECT_ID)} 
+              onClick={() => {navigate(`/project/${project.PROJECT_ID}`)}} 
               className="project-item"
             >
               <div className="project-info">
