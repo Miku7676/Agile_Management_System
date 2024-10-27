@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
@@ -23,27 +23,67 @@ const verifyToken = (req, res, next) => {
 };
 
 router.get('/',verifyToken,(req,res) => {
-    // const userId = req.userId;
-    const {projectId} = req.body;
+    const userId = req.userId;
+    const projectId = req.params.project_Id;
+
+    if (!projectId) {
+      return res.status(400).json({ error: 'Project ID is required' });
+    }
+
+    const query = `
+      CALL fetchComments(?, ?)
+    `
+  
+    db.query(query, [projectId, userId], (err, commentresults) => {
+      if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Failed to create comment' });
+      }
+
+      if (!commentresults.length > 2){
+        console.error("project does not exist")
+        return res.status(400).send("Invalid Project Id")
+      }
 
 
+      // console.log(commentresults[0]);
+      res.status(201).json({ 
+          message: "Comment created successfully",
+          result: commentresults[0]
+      });
+    });
+
+    
 })
 
 router.post('/postcom', verifyToken, (req, res) => {
     const userId = req.userId;
-    const {projectId,content} = req.body;
-  
+    const projectId = req.params.project_Id;
+    const {content} = req.body;
+    console.log(`this is the proj_id: ${projectId}`)
+
+    if (!projectId) {
+      return res.status(400).json({ error: 'Project ID is required' });
+    }
+    
+    if (!content) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+
+
     const query = `
       INSERT INTO COMMENT(USER_ID,PROJECT_ID,CONTENT) VALUES(?,?,?)
     `
   
-    db.query(query, [userId,projectId,"ahhahaha"], (err, results) => {
+    db.query(query, [userId, projectId, content], (err, results) => {
       if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({ error: 'Failed to fetch projects' });
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Failed to create comment' });
       }
-      // userid err handle
-      res.status(200).send({message:"success"});
+      res.status(201).json({ 
+          message: "Comment created successfully",
+          commentId: results.insertId
+      });
     });
   });
 

@@ -35,7 +35,7 @@ app.use('/api/sprints', require('./routes/sprints'));
 // app.use('/api/members', require('./routes/users'));
 app.use('/api/project', require('./routes/project'));
 app.use('/api/users', require('./routes/users'));
-app.use('/api/comment', require('./routes/comment'));
+// app.use('/api/comment', require('./routes/comment'));
 
 
 

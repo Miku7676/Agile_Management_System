@@ -18,11 +18,11 @@
 .comment {
     margin-bottom: 10px;
     padding: 5px;
-    background-color: #41c04b;
+    background-color: #aaaaaa;
     border-radius: 5px;
-    word-wrap: break-word; /* Break long words */
-    overflow-wrap: break-word; /* Additional support for overflow wrapping */
-    max-width: 100%; /* Ensure it doesn't exceed the container */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
     white-space: normal;
 }
 
@@ -34,7 +34,7 @@
 
 .commentbox textarea {
     width: 100%;
-    resize: none; /* Prevent resizing */
+    resize: none;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
