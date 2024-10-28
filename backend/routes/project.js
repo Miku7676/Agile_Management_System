@@ -5,7 +5,7 @@ const db = require('../db');
 
 const verifyToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
-    console.log('Token ik:', token); // Log the token for debugging
+    console.log('Token ik:', token); 
     
     if (!token) {
       console.log('No token provided');
@@ -131,7 +131,7 @@ router.post('/join', verifyToken, (req,res) => {
 
 router.get('/:project_Id', verifyToken, (req,res) => {
   const projectId = req.params.project_Id;
-
+  console.log(`this is the proj_id: ${projectId}`)
 
   const projectQuery = `call fetchProjectDetails(?)`
 
@@ -154,7 +154,7 @@ router.get('/:project_Id', verifyToken, (req,res) => {
   });
 })
 
-
+router.use('/:project_Id/comment', require('./comment'));
 
 module.exports = router;
 

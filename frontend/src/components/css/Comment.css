@@ -1,0 +1,57 @@
+.comment-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.comments-list {
+    flex-grow: 1; /* Takes up remaining space */
+    overflow-y: auto; /* Makes the comments area scrollable */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    max-height: 500px; /* Set a max height for the scrollable area */
+    background-color: #f9f9f9;
+}
+
+.comment {
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #aaaaaa;
+    border-radius: 5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    white-space: normal;
+}
+
+.commentbox {
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Allows for absolute positioning */
+}
+
+.commentbox textarea {
+    width: 100%;
+    resize: none;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px; /* Add some space above the textarea */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.commentbox button {
+    margin-top: 5px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.commentbox button:hover {
+    opacity: 0.8; /* Slightly transparent on hover */
+}

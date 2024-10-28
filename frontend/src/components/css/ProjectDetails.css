@@ -1,10 +1,19 @@
+*{
+    box-sizing: border-box;
+}
+.container {
+    position: relative;
+    box-sizing: border-box;
+    /* max-width: fit-content; */
+}
+
 .project-details {
     background-color: white;      /* White background */
-    padding: 20px;                  /* Padding around the content */
+    padding: 20px;                 
     border-radius: 8px;             /* Rounded corners */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    margin: 20px;                   /* Margin for spacing */
-    width:100%;              /* Maximum width */
+    margin: 20px;
+    max-width:100%;              /* Maximum width */
     flex-grow: 1;                   /* Allow it to grow within flex container */
     font-family: Arial, sans-serif; /* Set a clean font */
     color: #333;  
@@ -42,6 +51,64 @@ ul {
 li {
     margin-bottom: 5px;             /* Space between list items */
     font-size: 0.95rem;             /* Slightly smaller font for list items */
+}
+/* Button styling */
+.openComment {
+    background-color: #4CAF50;    /* Green background */
+    color: white;
+    margin-right: 10px;                  /* White text */
+    padding: 10px 20px;           /* Padding around the text */
+    font-size: 1rem;              /* Font size */
+    cursor: pointer;               /* Pointer cursor on hover */
+    border-radius: 5px;           /* Rounded corners */
+    border: none;                  /* No border */
+    margin-bottom: 15px;          /* Space below buttons */
+    transition: background-color 0.3s ease, opacity 0.3s ease; /* Transition effects */
+}
+
+.openComment:hover {
+    opacity: 0.8;                  /* Slight opacity change on hover */
+}
+
+.comment-modal-container {
+    position: fixed;               /* Fixed position to cover the entire viewport */
+    top: 0;                        /* Align to the top */
+    left: 0;                       /* Align to the left */
+    width: 100%;                   /* Full width */
+    height: 100%;                  /* Full height */
+    background-color: rgba(0, 0, 0, 0.5);  /* Dark semi-transparent background */
+    display: flex;                 /* Flexbox for centering */
+    justify-content: center;       /* Center horizontally */
+    align-items: center;           /* Center vertically */
+    
+}
+
+/* Modal window styling */
+.comment-modal-content {
+    background-color: white;       /* White background for the modal */
+    padding: 20px;                 /* Padding inside the modal */
+    width: 1000px;                  /* Fixed width */
+    border-radius: 8px;           /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    z-index: 1000;                 /* Higher z-index for the modal content */
+    position: relative;
+    overflow: auto;
+    max-height: 80%;
+}
+
+/* Close button styling */
+.comment-close-btn {
+    position: absolute;            /* Absolute positioning within modal */
+    top: 10px;                    /* Distance from the top */
+    right: 20px;                  /* Distance from the right */
+    font-size: 24px;              /* Font size for the close button */
+    font-weight: bold;            /* Bold text */
+    cursor: pointer;              /* Pointer cursor on hover */
+    color: #333;                  /* Dark gray color */
+}
+
+.comment-close-btn:hover {
+    color: #f00;                  /* Red color on hover */
 }
 
 @media (max-width: 600px) {

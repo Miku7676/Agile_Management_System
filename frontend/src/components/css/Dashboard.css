@@ -64,10 +64,11 @@
 .modal-content {
     background-color: white;       /* White background for the modal */
     padding: 20px;                 /* Padding inside the modal */
-    width: 400px;                  /* Fixed width */
+    width: 600px;                  /* Fixed width */
     border-radius: 8px;           /* Rounded corners */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
     z-index: 1000;                 /* Higher z-index for the modal content */
+    position: relative;
 }
 
 /* Close button styling */
@@ -84,6 +85,7 @@
 .close-btn:hover {
     color: #f00;                  /* Red color on hover */
 }
+
 
 /* Blurred background when modal is open */
 .dashboard-content-blur {

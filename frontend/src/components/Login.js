@@ -23,7 +23,7 @@ function Login() {
         console.log('Login successful:', response.data);
 
         // Store the token in localStorage
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
 
         // Redirect the user to the dashboard
         navigate('/');

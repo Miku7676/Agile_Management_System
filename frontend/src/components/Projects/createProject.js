@@ -11,9 +11,9 @@ function CreateProject() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
-        alert('No token found in localStorage. Please log in again.');
+        alert('No token found in sessionStorage. Please log in again.');
         window.location.reload();
       }
       // eslint-disable-next-line

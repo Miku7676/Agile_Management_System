@@ -6,9 +6,10 @@ import SprintList from './components/SprintList';
 import UserList from './components/UserList';
 import Login from './components/Login'; // Import Login component
 import SignUp from './components/SignUp';
-import Project from './components/Project';
+// import Project from './components/Project';
 import ProtectedRoute from './components/ProtectedRoute'; // For protecting routes
 import AppLayout from './components/AppLayout'; // This should NOT contain a <Router>
+import ProjectDetails from './components/Projects/ProjectDetails';
 // import { useNavigate } from 'react-router-dom';
 
 function App() {
@@ -59,10 +60,10 @@ function App() {
               }
             />
             <Route
-              path="/Project/:projectId"
+              path="/project/:projectId"
               element={
                 <ProtectedRoute>
-                  <Project />
+                  <ProjectDetails />
                 </ProtectedRoute>
               }
             />
