@@ -5,7 +5,7 @@ const db = require('../db');
 
 const verifyToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
-    console.log('Token ik:', token); // Log the token for debugging
+    console.log('Token ik:', token); 
     
     if (!token) {
       console.log('No token provided');

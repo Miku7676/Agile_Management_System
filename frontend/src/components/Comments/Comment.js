@@ -3,6 +3,7 @@ import '../css/Comment.css';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 
+
 function Comment() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -14,13 +15,13 @@ function Comment() {
 
 
   useEffect(() => {
-    const tkn = localStorage.getItem('token')
+    const tkn = sessionStorage.getItem('token')
     tkn && setUserId(JSON.parse(atob(tkn.split('.')[1])).userId);
   }, [location]);
 
   const fetchComments = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         alert('No token found in localStorage. Please log in again.');
         window.location.reload();
@@ -84,7 +85,7 @@ function Comment() {
 
       // Make a POST request to save the new comment
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
           alert('No token found in localStorage. Please log in again.');
           window.location.reload();
@@ -100,6 +101,7 @@ function Comment() {
         });
 
         // Fetch updated comments
+        // setInterval(fetchComments, 10000);
         fetchComments();
         setNewComment(''); // Clear the input
       } catch (err) {
@@ -107,6 +109,8 @@ function Comment() {
       }
     }
   };
+
+
 
   return (
     <div className='comment-section'>

@@ -5,14 +5,14 @@ import './css/Navbar.css'; // Import the CSS file
 export const NAVBAR_HEIGHT = 70; // Matching the paddingTop in AppLayout
 
 function Navbar() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const location = useLocation();
   const [userId,setUserId] = useState();
 
 
   useEffect(() => {
-    const tkn = localStorage.getItem('token')
+    const tkn = sessionStorage.getItem('token')
     setToken(tkn);
     tkn && setUserId(JSON.parse(atob(tkn.split('.')[1])).userId);
   }, [location]);
@@ -20,7 +20,7 @@ function Navbar() {
   
 
   const logOut = () => {
-    token && localStorage.removeItem('token');
+    token && sessionStorage.removeItem('token');
     setToken(null);
     window.location.reload()
     console.log("logout");
