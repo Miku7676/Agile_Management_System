@@ -153,7 +153,7 @@ router.get('/:project_Id', verifyToken, (req,res) => {
    
   });
 })
-
+router.use('/:project_Id/sprint', require('./sprints'));
 router.use('/:project_Id/comment', require('./comment'));
 
 module.exports = router;

@@ -1,38 +1,123 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const db = require('../db');
 
-// Get all sprints with group (project) and scrum master details
-router.get('/', (req, res) => {
+// Reuse the same verifyToken middleware from project.js
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(403).json({ error: 'No token provided' });
+    }
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      req.userId = decoded.userId;
+      next();
+    });
+};
+
+// Get all sprints for a specific project
+router.get('/', verifyToken, (req, res) => {
+  const projectId = req.params.projectId;
+
   const query = `
-    SELECT s.SPRINT_ID, s.NAME as sprint_name, s.START_DT as start_date, s.END_DT as end_date,
-           p.PROJECT_ID as group_id, p.NAME as group_name, p.SCRUM_MASTER as scrum_master_id
+    SELECT 
+      s.SPRINT_ID,
+      s.NAME,
+      s.START_DT,
+      s.END_DT,
+      s.PROJECT_ID
     FROM sprint s
-    JOIN project p ON s.PROJECT_ID = p.PROJECT_ID
+    WHERE s.PROJECT_ID = ?
   `;
 
-  db.query(query, (err, results) => {
+  db.query(query, [projectId], (err, results) => {
     if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch sprints' });
     }
-    res.json(results);
+    res.status(200).json(results);
   });
 });
 
-// Post a new sprint (assuming PROJECT_ID is passed as part of the request)
-router.post('/', (req, res) => {
-  const { sprint_name, start_date, end_date, project_id } = req.body;
-  const query = `
-    INSERT INTO sprint (NAME, START_DT, END_DT, PROJECT_ID) 
-    VALUES (?, ?, ?, ?)
+// Create a new sprint
+router.post('/create', verifyToken, (req, res) => {
+  console.log('POST request to create sprint received:', req.body);
+  const projectId = req.params.project_Id;
+  const userId = req.userId;
+  const { name, startDate, endDate } = req.body;
+
+  // Validation
+  if (!name || !startDate || !endDate || !projectId) {
+    console.log('Missing required fields');
+    return res.status(400).json({ 
+      error: 'Sprint name, start date, end date, and project ID are required' 
+    });
+  }
+
+  // Validate date format and logic
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return res.status(400).json({ error: 'Invalid date format' });
+  }
+
+  if (end <= start) {
+    return res.status(400).json({ error: 'End date must be after start date' });
+  }
+
+  // Check if user has permission to create sprint in this project
+  const checkPermissionQuery = `
+    SELECT ROLE 
+    FROM project_works_on 
+    WHERE USER_ID = ? AND PROJECT_ID = ?
   `;
-  db.query(query, [sprint_name, start_date, end_date, project_id], (err, result) => {
+
+  db.query(checkPermissionQuery, [userId, projectId], (err, results) => {
     if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to check permissions' });
     }
-    res.status(201).json({ id: result.insertId, ...req.body });
+
+    if (results.length === 0) {
+      return res.status(403).json({ error: 'User is not a member of this project' });
+    }
+
+    const userRole = results[0].ROLE;
+    if (userRole !== 'Scrum_Master' && userRole !== 'Project_Manager') {
+      return res.status(403).json({ error: 'Only Scrum Master or Project Manager can create sprints' });
+    }
+
+    // Insert the new sprint
+    const insertQuery = `
+      INSERT INTO sprint (NAME, START_DT, END_DT, PROJECT_ID) 
+      VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(insertQuery, [name, startDate, endDate, projectId], (err, result) => {
+      if (err) {
+        console.error('Database error:', err);
+        if (err.errno === 1452) {
+          return res.status(404).json({ error: 'Project does not exist' });
+        }
+        return res.status(500).json({ error: 'Failed to create sprint' });
+      }
+
+      console.log('Sprint created successfully');
+      res.status(201).json({ 
+        message: 'Sprint created successfully',
+        sprintId: result.insertId,
+        name,
+        startDate,
+        endDate,
+        projectId
+      });
+    });
   });
 });
 
