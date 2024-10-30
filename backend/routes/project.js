@@ -153,8 +153,10 @@ router.get('/:project_Id', verifyToken, (req,res) => {
    
   });
 })
-
+router.use('/:project_Id/sprint', require('./sprints'));
 router.use('/:project_Id/comment', require('./comment'));
+router.use('/:project_Id/tasks', require('./tasks'));
+
 
 module.exports = router;
 

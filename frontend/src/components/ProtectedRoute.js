@@ -3,7 +3,6 @@ import { Navigate } from 'react-router-dom';
 
 function ProtectedRoute({ children }) {
   const token = sessionStorage.getItem('token'); // Check if token exists
-  console.log(`my token: ${token}`)
   // If no token, redirect to login page
   if (!token) {
     return <Navigate to="/login" />;
