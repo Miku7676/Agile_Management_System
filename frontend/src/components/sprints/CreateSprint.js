@@ -1,13 +1,14 @@
 // CreateSprint.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import './css/CreateSprint.css'
+import '../css/CreateSprint.css'
 
 function CreateSprint({ projectId, onClose, onSprintCreated }) {
   const [formData, setFormData] = useState({
     name: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    desc:''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,12 +24,30 @@ function CreateSprint({ projectId, onClose, onSprintCreated }) {
     e.preventDefault();
     setLoading(true);
     setError('');
-
+  
     try {
       const token = sessionStorage.getItem('token');
+  
+      // Format dates to yyyy-mm-dd
+      const formatDate = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        console.log(`${year}-${month}-${day}`);
+        return `${year}-${month}-${day}`;
+      };
+  
+      const formattedData = {
+        ...formData,
+        startDate: formatDate(formData.startDate),
+        endDate: formatDate(formData.endDate),
+      };
+      
+  
       await axios.post(
         `http://localhost:5000/api/project/${projectId}/sprint/create`,
-        formData,
+        formattedData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,6 +63,7 @@ function CreateSprint({ projectId, onClose, onSprintCreated }) {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -89,6 +109,17 @@ function CreateSprint({ projectId, onClose, onSprintCreated }) {
             value={formData.endDate}
             onChange={handleChange}
             required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="desc">Description:</label>
+          <textarea
+            id="desc"
+            name="desc"
+            value={formData.desc}
+            onChange={handleChange}
+            required
+            placeholder="Enter sprint description"
           />
         </div>
 

@@ -10,6 +10,8 @@ import SignUp from './components/SignUp';
 import ProtectedRoute from './components/ProtectedRoute'; // For protecting routes
 import AppLayout from './components/AppLayout'; // This should NOT contain a <Router>
 import ProjectDetails from './components/Projects/ProjectDetails';
+import DetailedSprint from './components/sprints/DetailedSprint';
+
 // import { useNavigate } from 'react-router-dom';
 
 function App() {
@@ -64,6 +66,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProjectDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/project/:projectId/:sprintId"
+              element={
+                <ProtectedRoute>
+                  <DetailedSprint />
                 </ProtectedRoute>
               }
             />

@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
@@ -30,7 +30,8 @@ router.get('/', verifyToken, (req, res) => {
       s.NAME,
       s.START_DT,
       s.END_DT,
-      s.PROJECT_ID
+      s.PROJECT_ID,
+      s.Description
     FROM sprint s
     WHERE s.PROJECT_ID = ?
   `;
@@ -49,8 +50,9 @@ router.post('/create', verifyToken, (req, res) => {
   console.log('POST request to create sprint received:', req.body);
   const projectId = req.params.project_Id;
   const userId = req.userId;
-  const { name, startDate, endDate } = req.body;
+  const { name, startDate, endDate,desc } = req.body;
 
+  console.log(name, startDate, endDate, projectId)
   // Validation
   if (!name || !startDate || !endDate || !projectId) {
     console.log('Missing required fields');
@@ -71,35 +73,17 @@ router.post('/create', verifyToken, (req, res) => {
     return res.status(400).json({ error: 'End date must be after start date' });
   }
 
-  // Check if user has permission to create sprint in this project
-  const checkPermissionQuery = `
-    SELECT ROLE 
-    FROM project_works_on 
-    WHERE USER_ID = ? AND PROJECT_ID = ?
-  `;
-
-  db.query(checkPermissionQuery, [userId, projectId], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Failed to check permissions' });
-    }
-
-    if (results.length === 0) {
-      return res.status(403).json({ error: 'User is not a member of this project' });
-    }
-
-    const userRole = results[0].ROLE;
-    if (userRole !== 'Scrum_Master' && userRole !== 'Project_Manager') {
-      return res.status(403).json({ error: 'Only Scrum Master or Project Manager can create sprints' });
-    }
-
-    // Insert the new sprint
-    const insertQuery = `
-      INSERT INTO sprint (NAME, START_DT, END_DT, PROJECT_ID) 
-      VALUES (?, ?, ?, ?)
+  // // Check if user has permission to create sprint in this project
+  // const checkPermissionQuery = `
+  //   SELECT ROLE 
+  //   FROM project_works_on 
+  //   WHERE USER_ID = ? AND PROJECT_ID = ?
+  // `;
+  const insertQuery = `
+      call createSprint(?,?,?,?,?,?)
     `;
 
-    db.query(insertQuery, [name, startDate, endDate, projectId], (err, result) => {
+    db.query(insertQuery, [userId,projectId, startDate, endDate,name,desc], (err, result) => {
       if (err) {
         console.error('Database error:', err);
         if (err.errno === 1452) {
@@ -117,7 +101,25 @@ router.post('/create', verifyToken, (req, res) => {
         endDate,
         projectId
       });
-    });
+  // db.query( [userId, projectId], (err, results) => {
+  //   // if (err) {
+  //   //   console.error('Database error:', err);
+  //   //   return res.status(500).json({ error: 'Failed to check permissions' });
+  //   // }
+
+  //   if (results.length === 0) {
+  //     return res.status(403).json({ error: 'User is not a member of this project' });
+  //   }
+
+  //   const userRole = results[0].ROLE;
+  //   if (userRole !== 'Scrum_Master' && userRole !== 'Project_Manager') {
+  //     return res.status(403).json({ error: 'Only Scrum Master or Project Manager can create sprints' });
+  //   }
+
+  //   // Insert the new sprint
+    
+  //   });
+  // 
   });
 });
 
