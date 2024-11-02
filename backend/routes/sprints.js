@@ -101,25 +101,6 @@ router.post('/create', verifyToken, (req, res) => {
         endDate,
         projectId
       });
-  // db.query( [userId, projectId], (err, results) => {
-  //   // if (err) {
-  //   //   console.error('Database error:', err);
-  //   //   return res.status(500).json({ error: 'Failed to check permissions' });
-  //   // }
-
-  //   if (results.length === 0) {
-  //     return res.status(403).json({ error: 'User is not a member of this project' });
-  //   }
-
-  //   const userRole = results[0].ROLE;
-  //   if (userRole !== 'Scrum_Master' && userRole !== 'Project_Manager') {
-  //     return res.status(403).json({ error: 'Only Scrum Master or Project Manager can create sprints' });
-  //   }
-
-  //   // Insert the new sprint
-    
-  //   });
-  // 
   });
 });
 

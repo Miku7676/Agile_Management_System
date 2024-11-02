@@ -1,90 +1,168 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import './css/SignUp.css';  // Importing the CSS file for styling
+import './css/SignUp.css';
 
-function SignUp() {
-  const [userid, setUserID] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+const SignUp = () => {
+  const [formData, setFormData] = useState({
+    userid: '',
+    username: '',
+    email: '',
+    password: ''
+  });
+  const [message, setMessage] = useState({ type: '', content: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-
-    const userData = {
-      userid,
-      username,
-      email,
-      password,
-      created_at: new Date().toISOString(),
-    };
-
-    axios
-      .post('http://localhost:5000/api/users/signup', userData)
-      .then((response) => {
-        console.log('User created:', response.data);
-        setMessage('User successfully created!');
-      })
-      .catch((error) => {
-        console.error('Error creating user:', error);
-        setMessage('Error creating user. Please try again.');
-      });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          created_at: new Date().toISOString(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ type: 'success', content: 'User successfully created!' });
+        window.location.href = '/login';
+      } else {
+        throw new Error(data.message || 'Error creating user');
+      }
+    } catch (error) {
+      setMessage({ type: 'error', content: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = () => {
+    window.location.href = 'http://localhost:5000/api/users/auth/google';
+};
+
 
   return (
     <div className="signup-container">
       <div className="signup-box">
-        <h2>Sign Up</h2>
-        {message && <p style={{ color: 'red' }}>{message}</p>}
-        <form onSubmit={handleSignup}>
-          <div className="form-group">
-            <label>User_SRN:</label>
-            <input
-              type="text"
-              value={userid}
-              onChange={(e) => setUserID(e.target.value)}
-              required
-            />
+        <header className="signup-header">
+          <h2 className="signup-title">Create an Account</h2>
+          <p className="signup-description">
+            Sign up using your email or continue with social accounts
+          </p>
+        </header>
+
+        <div className="signup-content">
+          {message.content && (
+            <div className={`alert ${message.type === 'error' ? 'alert-error' : 'alert-success'}`}>
+              <p>{message.content}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSignup} className="form-group">
+            <div className="form-group">
+              <label className="form-label" htmlFor="userid">User SRN</label>
+              <input
+                id="userid"
+                name="userid"
+                type="text"
+                value={formData.userid}
+                onChange={handleInputChange}
+                required
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="username">Username</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                value={formData.username}
+                onChange={handleInputChange}
+                required
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                className="form-input"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              className="signup-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Sign Up'}                       
+            </button>
+          </form>
+
+          <div className="divider">
+            <span className="divider-text">Or continue with</span>
           </div>
-          <div className="form-group">
-            <label>Username:</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+
+          <div className="oauth-buttons">
+            <button 
+              className="oauth-button" 
+              onClick={handleGoogleSignup}
+              type="button"
+            >
+              Google
+            </button>
           </div>
-          <div className="form-group">
-            <label>Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="signup-button">
-            Sign Up
-          </button>
-        </form>
-        <p>
-          Already have an account? <Link to="/login">LogIn</Link>
-        </p>
+        </div>
+
+        <footer className="signup-footer">
+          <p className="signup-footer-text">
+            Already have an account?{' '}
+            <a 
+              href="/login" 
+              className="signup-footer-link"
+            >
+              Log In
+            </a>
+          </p>
+        </footer>
       </div>
     </div>
   );
-}
+};
 
 export default SignUp;

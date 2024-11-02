@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import './css/Login.css'; // Importing the CSS file for styling
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import './css/Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const [error, setError] = useState('');
+  const location = useLocation();
+
+  // Handle OAuth success redirect
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    if (token) {
+      sessionStorage.setItem('token', token);
+      navigate('/');
+    }
+  }, [location, navigate]);
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const loginData = {
-      email,
-      password,
-    };
+    const loginData = { email, password };
 
     axios
       .post('http://localhost:5000/api/users/login', loginData)
       .then((response) => {
         const token = response.data.token;
-        console.log('Login successful:', response.data);
-
-        // Store the token in localStorage
         sessionStorage.setItem('token', token);
-
-        // Redirect the user to the dashboard
         navigate('/');
       })
       .catch((error) => {
@@ -35,6 +38,10 @@ function Login() {
           setError('An unexpected error occurred. Please try again later.');
         }
       });
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:5000/api/users/auth/google';
   };
 
   return (
@@ -63,6 +70,16 @@ function Login() {
           </div>
           <button type="submit" className="login-button">Login</button>
         </form>
+        
+        <div className="oauth-section">
+          <button 
+            onClick={handleGoogleLogin}
+            className="google-login-button"
+          >
+            Login with Google
+          </button>
+        </div>
+
         <p>
           Don't have an account? <Link to="/signup">Register Here</Link>
         </p>
