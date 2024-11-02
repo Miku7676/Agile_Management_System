@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+// eslint-disable-next-line
 import { useNavigate, useParams } from 'react-router-dom';
 import '../css/DetailedSprint.css';
 
@@ -8,16 +9,16 @@ function DetailedSprint() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { projectId, sprintId } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const token = sessionStorage.getItem('token');
-      const url = sprintId
-        ? `http://localhost:5000/api/project/${projectId}/sprint/${sprintId}/tasks`
-        : `http://localhost:5000/api/project/${projectId}/tasks`;
+      // const url = sprintId
+      //   ? /tasks`
+      //   :   `http://localhost:5000/api/project/${projectId}/tasks`;
 
-      const response = await axios.get(url, {
+      const response = await axios.get(`http://localhost:5000/api/project/${projectId}/sprint/${sprintId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -29,13 +30,13 @@ function DetailedSprint() {
     } finally {
       setLoading(false);
     }
-  };
+  },[projectId, sprintId])
 
   useEffect(() => {
     if (projectId) {
       fetchTasks();
     }
-  }, [projectId, sprintId]);
+  }, [projectId, sprintId, fetchTasks]);
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;

@@ -4,8 +4,8 @@ import Dashboard from './components/Dashboard';
 import TaskList from './components/TaskList';
 import SprintList from './components/SprintList';
 import UserList from './components/UserList';
-import Login from './components/Login'; // Import Login component
-import SignUp from './components/SignUp';
+import Login from './components/Auth/Login'; // Import Login component
+import SignUp from './components/Auth/SignUp';
 // import Project from './components/Project';
 import ProtectedRoute from './components/ProtectedRoute'; // For protecting routes
 import AppLayout from './components/AppLayout'; // This should NOT contain a <Router>
