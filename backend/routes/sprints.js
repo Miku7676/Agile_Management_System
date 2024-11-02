@@ -23,6 +23,7 @@ const verifyToken = (req, res, next) => {
 // Get all sprints for a specific project
 router.get('/', verifyToken, (req, res) => {
   const projectId = req.params.projectId;
+  const sprintId = req.params.sprintId;
 
   const query = `
     SELECT 
@@ -47,12 +48,10 @@ router.get('/', verifyToken, (req, res) => {
 
 // Create a new sprint
 router.post('/create', verifyToken, (req, res) => {
-  console.log('POST request to create sprint received:', req.body);
   const projectId = req.params.project_Id;
   const userId = req.userId;
   const { name, startDate, endDate,desc } = req.body;
 
-  console.log(name, startDate, endDate, projectId)
   // Validation
   if (!name || !startDate || !endDate || !projectId) {
     console.log('Missing required fields');
@@ -73,34 +72,30 @@ router.post('/create', verifyToken, (req, res) => {
     return res.status(400).json({ error: 'End date must be after start date' });
   }
 
-  // // Check if user has permission to create sprint in this project
-  // const checkPermissionQuery = `
-  //   SELECT ROLE 
-  //   FROM project_works_on 
-  //   WHERE USER_ID = ? AND PROJECT_ID = ?
-  // `;
+
   const insertQuery = `
-      call createSprint(?,?,?,?,?,?)
-    `;
+    call createSprint(?,?,?,?,?,?)
+  `;
 
-    db.query(insertQuery, [userId,projectId, startDate, endDate,name,desc], (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        if (err.errno === 1452) {
-          return res.status(404).json({ error: 'Project does not exist' });
-        }
-        return res.status(500).json({ error: 'Failed to create sprint' });
+  db.query(insertQuery, [userId, projectId, startDate, endDate, name, desc], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      if (err.errno === 1452) {
+        return res.status(404).json({ error: 'Project does not exist' });
       }
+      return res.status(500).json({ error: 'Failed to create sprint' });
+    }
 
-      console.log('Sprint created successfully');
-      res.status(201).json({ 
-        message: 'Sprint created successfully',
-        sprintId: result.insertId,
-        name,
-        startDate,
-        endDate,
-        projectId
-      });
+    console.log('Sprint created successfully');
+    console.log(result);
+    res.status(201).json({ 
+      message: 'Sprint created successfully',
+      sprintId: result.insertId,
+      name,
+      startDate,
+      endDate,
+      projectId
+    });
   });
 });
 

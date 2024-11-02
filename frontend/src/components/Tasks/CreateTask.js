@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './css/CreateTask.css';
+import '../css/CreateTask.css';
 
 function CreateTask({ projectId, sprintId, onClose, onTaskCreated }) {
   const [formData, setFormData] = useState({

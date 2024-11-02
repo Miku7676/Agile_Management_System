@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import './css/SignUp.css';
+// import axios from 'axios';
+// import { Link } from 'react-router-dom';
+import '../css/SignUp.css';  // Importing the CSS file for styling
 
 const SignUp = () => {
   const [formData, setFormData] = useState({

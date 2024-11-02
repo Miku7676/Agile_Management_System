@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import '../css/ProjectDetails.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Comment from '../Comments/Comment';
 import CreateSprint from '../sprints/CreateSprint';
-import CreateTask from '../CreateTask';
+// import CreateTask from '../Tasks/CreateTask';
 
 function ProjectDetails() {
   const [projectDetails, setProjectDetails] = useState(null);
@@ -13,11 +13,20 @@ function ProjectDetails() {
   const { projectId } = useParams();
   const [comments, setComments] = useState(false);
   const [showCreateSprint, setShowCreateSprint] = useState(false);
-  const [showCreateTask, setShowCreateTask] = useState(false);
-  const [selectedSprintId, setSelectedSprintId] = useState(null);
+  const [userId,setUserId] = useState();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  const fetchProjectDetails = async () => {
+
+  useEffect(() => {
+    const tkn = sessionStorage.getItem('token')
+    tkn && setUserId(JSON.parse(atob(tkn.split('.')[1])).userId);
+  }, [location]);
+  // const [showCreateTask, setShowCreateTask] = useState(false);
+  // const [selectedSprintId, setSelectedSprintId] = useState(null);
+  
+
+  const fetchProjectDetails = useCallback(async () => {
     try {
       const token = sessionStorage.getItem('token');
       const response = await axios.get(`http://localhost:5000/api/project/${projectId}`, {
@@ -32,7 +41,7 @@ function ProjectDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  },[projectId])
 
   
 
@@ -40,20 +49,19 @@ function ProjectDetails() {
     if (projectId) {
       fetchProjectDetails();
     }
-  }, [projectId]);
+  }, [projectId,fetchProjectDetails]);
 
   const closeModal = () => {
     setComments(false);
     setShowCreateSprint(false);
-    setShowCreateTask(false);
-    setSelectedSprintId(null);
+    // setShowCreateTask(false);
+    // setSelectedSprintId(null);
   };
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
   if (!projectDetails) return null;
   const { projectDetails: details, MemberDetails, SprintDetails } = projectDetails;
-
   return (
     <div className='container'>
       <div className="project-details">
@@ -73,13 +81,16 @@ function ProjectDetails() {
 
         <p><strong>Description:</strong> {details.DESCRIPTION}</p>
 
+        {/* Members */}
         <h3>Members:</h3>
         <ul>
           {MemberDetails.map(member => (
             <li key={member.USER_ID}>{member.USER_ID} - {member.ROLE}</li>
           ))}
         </ul>
-
+        
+        
+        {/* Sprints */}
         <h3>Sprints:</h3>
         <div className="sprint-section">
           {SprintDetails.length > 0 ? (
@@ -92,37 +103,39 @@ function ProjectDetails() {
                       {new Date(sprint.START_DT).toLocaleDateString()} - 
                       {new Date(sprint.END_DT).toLocaleDateString()}
                     </div>
-                    <button 
-                      className="create-task-btn"
-                      onClick={() => {
-                        setSelectedSprintId(sprint.SPRINT_ID);
-                        setShowCreateTask(true);
-                      }}
-                    >
-                      Create Task
-                    </button>
                   </li>
                 ))}
             </ul>
           ) : (
             <p>No sprints created yet</p>
           )}
-          <div className="button-container">
-            <button 
-              className="create-sprint-btn"
-              onClick={() => setShowCreateSprint(true)}
-            >
-              Create Sprint
-            </button>
-          </div>
-        </div>
+        
 
+          {/* create sprint (only availiable to scrum master) */}
+          {(userId === details.SCRUM_MASTER)?(
+            <div className="button-container">
+              <button 
+                className="create-sprint-btn"
+                onClick={() => setShowCreateSprint(true)}
+              >
+                Create Sprint
+              </button>
+            </div>
+          ):(null)}
+          
+
+        </div>
+        
+
+        {/* comments button */}
         <div className="button-container">
           <button className="openComment" onClick={() => setComments(true)}>
             Open Comments
           </button>
         </div>
+        
 
+        {/* render comments component from state */}
         {comments && (
           <div className="comment-modal-container" onClick={closeModal}>
             <div className="comment-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -133,6 +146,7 @@ function ProjectDetails() {
           </div>
         )}
 
+        {/* render create sprint component */}
         {showCreateSprint && (
           <div className="modal-container" onClick={closeModal}>
             <CreateSprint
@@ -143,16 +157,16 @@ function ProjectDetails() {
           </div>
         )}
       </div>
-      {showCreateTask && selectedSprintId && (
-      <div className="modal-container" onClick={closeModal}>
-        <CreateTask
-          projectId={projectId}
-          sprintId={selectedSprintId}
-          onClose={closeModal}
-          onTaskCreated={fetchProjectDetails}
-        />
-      </div>
-    )}
+      {/* {showCreateTask && selectedSprintId && (
+        <div className="modal-container" onClick={closeModal}>
+          <CreateTask
+            projectId={projectId}
+            sprintId={selectedSprintId}
+            onClose={closeModal}
+            onTaskCreated={fetchProjectDetails}
+          />
+        </div>
+      )} */}
     </div>
   );
 }
