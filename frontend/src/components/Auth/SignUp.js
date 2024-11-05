@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 // import { Link } from 'react-router-dom';
 import '../css/SignUp.css';  // Importing the CSS file for styling
-import { useGoogleLogin } from '@react-oauth/google'
+import { Link, useNavigate } from 'react-router-dom';
+// import { useGoogleLogin } from '@react-oauth/google'
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const SignUp = () => {
   });
   const [message, setMessage] = useState({ type: '', content: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,60 +29,56 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      await axios.post('http://localhost:5000/api/users/signup',  {
           ...formData,
           created_at: new Date().toISOString(),
-        }),
-      });
+        }) //.then(()=>{navigate('/login')})
+        .then(()=>{
+          setMessage({ type: 'success', content: 'User successfully created!' });
+          navigate('/login')
+        })
+        .catch((error)=>{
+          // console.log('hi',error);
+          if (error.response.data.errno === 1062) {
+            setMessage({ type: 'error', content: 'USERID already exists' })
+          }
+        })
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage({ type: 'success', content: 'User successfully created!' });
-        window.location.href = '/login';
-      } else {
-        throw new Error(data.message || 'Error creating user');
-      }
     } catch (error) {
-      setMessage({ type: 'error', content: error.message });
+      throw new Error('error creating user')
     } finally {
       setIsLoading(false);
     }
   };
 
-  const googleSuccess = async (res)=> {
-    try {
-        const newRes = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo",
-            {
-                headers: {
-                    Authorization: `Bearer ${res?.access_token}`,
-                },
-            }
-        );
-        // console.log(res.access_token);
-        const token = res?.access_token;
-        const result = newRes?.data;
-        console.log(result, token);
+  // const googleSuccess = async (res)=> {
+  //   try {
+  //       const newRes = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo",
+  //           {
+  //               headers: {
+  //                   Authorization: `Bearer ${res?.access_token}`,
+  //               },
+  //           }
+  //       );
+  //       // console.log(res.access_token);
+  //       const token = res?.access_token;
+  //       const result = newRes?.data;
+  //       console.log(result, token);
 
-        // dispatch({type: 'AUTH', data: {result,token}});
-        // navigate('/')
-    } catch (error) {
-        console.log(error)
-    }
-  }
-  const googleFailure= (error)=> {
-      console.log(error)
-      console.log("Google Sign In was unuccessful");
-  }
-  const handleGoogleSignup = useGoogleLogin({
-    onSuccess: googleSuccess,
-    onError: googleFailure
-  });
+  //       // dispatch({type: 'AUTH', data: {result,token}});
+  //       // navigate('/')
+  //   } catch (error) {
+  //       console.log(error)
+  //   }
+  // }
+  // const googleFailure= (error)=> {
+  //     console.log(error)
+  //     console.log("Google Sign In was unuccessful");
+  // }
+  // const handleGoogleSignup = useGoogleLogin({
+  //   onSuccess: googleSuccess,
+  //   onError: googleFailure
+  // });
 
 
   return (
@@ -162,11 +160,11 @@ const SignUp = () => {
             </button>
           </form>
 
-          <div className="divider">
+          {/* <div className="divider">
             <span className="divider-text">Or continue with</span>
-          </div>
+          </div> */}
 
-          <div className="oauth-buttons">
+          {/* <div className="oauth-buttons">
             <button 
               className="oauth-button" 
               onClick={handleGoogleSignup}
@@ -174,18 +172,18 @@ const SignUp = () => {
             >
               Google
             </button>
-          </div>
+          </div> */}
         </div>
 
         <footer className="signup-footer">
           <p className="signup-footer-text">
             Already have an account?{' '}
-            <a 
-              href="/login" 
+            <Link 
+              to='/login'
               className="signup-footer-link"
             >
               Log In
-            </a>
+            </Link>
           </p>
         </footer>
       </div>

@@ -20,11 +20,11 @@ function Login() {
     }
   }, [location, navigate]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const loginData = { email, password };
 
-    axios
+    await axios
       .post('http://localhost:5000/api/users/login', loginData)
       .then((response) => {
         const token = response.data.token;
@@ -40,9 +40,9 @@ function Login() {
       });
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/users/auth/google';
-  };
+  // const handleGoogleLogin = () => {
+  //   window.location.href = 'http://localhost:5000/api/users/auth/google';
+  // };
 
   return (
     <div className="login-container">
@@ -71,14 +71,14 @@ function Login() {
           <button type="submit" className="login-button">Login</button>
         </form>
         
-        <div className="oauth-section">
+        {/* <div className="oauth-section">
           <button 
             onClick={handleGoogleLogin}
             className="google-login-button"
           >
             Login with Google
           </button>
-        </div>
+        </div> */}
 
         <p>
           Don't have an account? <Link to="/signup">Register Here</Link>

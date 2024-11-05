@@ -2,15 +2,15 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const passport = require('passport');
+// const session = require('express-session');
+// const passport = require('passport');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.DB_PORT || 5000;
 
 // Initialize passport config
-require('./config/passport');
+// require('./config/passport');
 
 // Middleware
 app.use(cors({
@@ -20,19 +20,19 @@ app.use(cors({
 app.use(bodyParser.json());
 
 // Session configuration - must come before passport.initialize()
-app.use(session({
-  secret: process.env.JWT_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // true in production
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+// app.use(session({
+//   secret: process.env.JWT_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: {
+//     secure: process.env.NODE_ENV === 'production', // true in production
+//     maxAge: 24 * 60 * 60 * 1000 // 24 hours
+//   }
+// }));
 
 // Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // MySQL Connection
 const db = mysql.createConnection({
@@ -60,10 +60,10 @@ app.use('/api/project', require('./routes/project'));
 app.use('/api/users', require('./routes/users'));
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send('Something broke!');
+// });
 
 // Catch-all route handler for any requests to an unknown route
 app.use((req, res) => {
@@ -75,9 +75,9 @@ app.listen(port, () => {
 });
 
 // Graceful shutdown handler
-process.on('SIGTERM', () => {
-  db.end(() => {
-    console.log('Database connection closed.');
-    process.exit(0);
-  });
-});
+// process.on('SIGTERM', () => {
+//   db.end(() => {
+//     console.log('Database connection closed.');
+//     process.exit(0);
+//   });
+// });
