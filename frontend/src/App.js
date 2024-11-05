@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute'; // For protecting rout
 import AppLayout from './components/AppLayout'; // This should NOT contain a <Router>
 import ProjectDetails from './components/Projects/ProjectDetails';
 import DetailedSprint from './components/sprints/DetailedSprint';
+import { GoogleOAuthProvider} from "@react-oauth/google"
 
 // import { useNavigate } from 'react-router-dom';
 

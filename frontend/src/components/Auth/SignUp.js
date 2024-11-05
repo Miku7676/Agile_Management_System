@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 // import { Link } from 'react-router-dom';
 import '../css/SignUp.css';  // Importing the CSS file for styling
+import { useGoogleLogin } from '@react-oauth/google'
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -52,9 +53,34 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignup = () => {
-    window.location.href = 'http://localhost:5000/api/users/auth/google';
-};
+  const googleSuccess = async (res)=> {
+    try {
+        const newRes = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo",
+            {
+                headers: {
+                    Authorization: `Bearer ${res?.access_token}`,
+                },
+            }
+        );
+        // console.log(res.access_token);
+        const token = res?.access_token;
+        const result = newRes?.data;
+        console.log(result, token);
+
+        // dispatch({type: 'AUTH', data: {result,token}});
+        // navigate('/')
+    } catch (error) {
+        console.log(error)
+    }
+  }
+  const googleFailure= (error)=> {
+      console.log(error)
+      console.log("Google Sign In was unuccessful");
+  }
+  const handleGoogleSignup = useGoogleLogin({
+    onSuccess: googleSuccess,
+    onError: googleFailure
+  });
 
 
   return (
