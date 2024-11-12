@@ -43,10 +43,8 @@ The system employs Agile development for its iterative approach, flexibility, co
    ```bash
      npm install
 3. **Environment Setup:**:
-     ```bash
        Configure environment variables in a .env file with database credentials, API keys, etc.
 4. **Database Setup:**:
-     ```bash
      - Item 1 Ensure the database is running and configured with necessary schemas.
      - Item 2 Run migration scripts if applicable.
 
@@ -55,15 +53,15 @@ The system employs Agile development for its iterative approach, flexibility, co
 To start the backend and frontend, follow these steps:
 
 **Run the Backend**: Navigate to the backend directory and use nodemon to run the server.
-    ```bash
     Copy code
+    ```bash
     cd backend
     nodemon server.js
 
 **Run the Frontend**: In a new terminal, navigate to the frontend directory and start the React application.
-
-    ```bash
+    
     Copy code
+    ```bash
     cd frontend
     npm start
 **Access the Application**:
@@ -72,11 +70,10 @@ To start the backend and frontend, follow these steps:
 
 ## Usage
 - **User Login**:
-   ```bash
    Register or log in.
 **Project and Task Management**: 
-    ```bash
+   
         Create projects, add tasks, and organize them into sprints.
 **Tracking Progress**: 
-  ```bash
+ 
         Use the sprint board to monitor task progression.
