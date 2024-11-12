@@ -41,8 +41,55 @@ END$$
 DELIMITER ;
 ;
 
-USE `project_management_system`;
-DROP procedure IF EXISTS `createTask`;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `fetch_sprintTasks`(IN spr_ID INT)
+BEGIN
+	SELECT 
+      s.SPRINT_ID,
+      s.NAME,
+      s.START_DT,
+      s.END_DT,
+      s.PROJECT_ID,
+      s.Description
+    FROM sprint s
+    WHERE s.SPRINT_ID = spr_ID;
+    
+    SELECT t.TASK_ID,  t.TITLE, t.DESCRIPTION, t.ASSIGNED_TO, ts.NAME FROM task as t join task_status as ts ON t.STATUS_ID = ts.STATUS_ID  WHERE SPRINT_ID = spr_ID;
+END
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createSprint`(
+    IN userId VARCHAR(25), 
+    IN proj_Id INT,
+    IN START_D DATE,
+    IN END_D DATE,
+    IN S_NAME VARCHAR(100),
+    IN S_Desc VARCHAR(150)
+)
+BEGIN
+
+    IF checkRole(proj_Id, userId) THEN
+        INSERT INTO sprint( NAME, START_DT, END_DT, PROJECT_ID, Description) VALUES (S_NAME, START_D, END_D, proj_Id, S_Desc);
+        SELECT 1 as 'opt_status';
+    ELSE
+        SELECT 0 AS 'opt_status';
+    END IF;
+END
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addUserToProject`(IN projId INT, IN userId VARCHAR(25))
+BEGIN
+	DECLARE projectExists BOOLEAN;
+    DECLARE userExists BOOLEAN;
+    SET projectExists = checkProject(projId);
+    SET userExists = checkUserInProject(userId,projId);
+	IF projectExists and NOT userExists THEN
+		INSERT INTO `project_works_on`(USER_ID,PROJECT_ID,ROLE) VALUES (userId,projId,'Member');
+        SELECT 0 AS opstatus;
+	ELSE
+		IF NOT projectExists THEN SELECT 1 AS opstatus; -- code 1 : project id not found
+        ELSE
+			SELECT 2 AS opstatus; -- code 2 : user id already exists for project
+		END IF;
+	END IF;	
+END
 
 USE `project_management_system`;
 DROP procedure IF EXISTS `project_management_system`.`createTask`;

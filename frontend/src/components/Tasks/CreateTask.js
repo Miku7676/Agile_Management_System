@@ -7,7 +7,7 @@ function CreateTask({ projectId, sprintId, onClose, onTaskCreated }) {
     title: '',
     description: '',
     assigned_to: '',
-    status_id: 1, // Default to 'in progress'
+    status_id: 0, // Default to 'in progress'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

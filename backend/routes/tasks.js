@@ -56,6 +56,7 @@ const verifyToken = (req, res, next) => {
 // Create a new task
 router.post('/create', verifyToken, (req, res) => {
   const projectId = req.params.project_Id;
+  const sprint_Id = req.params.sprintId;
   console.log(projectId);
   const {
     title,
@@ -78,7 +79,7 @@ router.post('/create', verifyToken, (req, res) => {
 
   db.query(
     createTaskQuery,
-    [title, description, assigned_to, projectId, sprint_id, status_id],
+    [title, description, assigned_to, projectId, sprint_Id, status_id],
     (err, result) => {
       if (err) {
         console.error('Database error:', err);
@@ -88,7 +89,7 @@ router.post('/create', verifyToken, (req, res) => {
         return res.status(500).json({ error: 'Failed to create task' });
       }
 
-      const taskId = result[0][0].TASK_ID;
+      const taskId = result
       res.status(201).json({
         message: 'Task created successfully',
         task: {

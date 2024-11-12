@@ -12,7 +12,7 @@ CREATE TABLE PROJECT (
     PROJECT_ID INT AUTO_INCREMENT PRIMARY KEY,
     NAME VARCHAR(100) NOT NULL,
     DESCRIPTION TEXT,
-    START_DATE START_DATE timestamp default current_timestamp,
+    START_DATE timestamp default current_timestamp,
     END_DATE DATE,
     PROJECT_MANAGER VARCHAR(25),  -- Foreign key referencing the USER table
     SCRUM_MASTER VARCHAR(25),     -- Foreign key referencing the USER table
