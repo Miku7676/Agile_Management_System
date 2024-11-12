@@ -21,41 +21,42 @@ const verifyToken = (req, res, next) => {
 };
 
 // Get all tasks with status information
-router.get('/', verifyToken, (req, res) => {
-  const projectId = req.params.projectId;
-  const sprintId = req.params.sprintId;
+// router.get('/', verifyToken, (req, res) => {
+//   const projectId = req.params.projectId;
+//   const sprintId = req.params.sprintId;
 
-  const query = `
-    SELECT 
-      t.TASK_ID,
-      t.TITLE,
-      t.DESCRIPTION,
-      t.ASSIGNED_TO,
-      t.PROJECT_ID,
-      t.SPRINT_ID,
-      TS.STATUS_ID,
-      TS.NAME as STATUS_NAME,
-    FROM TASK t
-    JOIN TASK_STATUS Ts ON t.STATUS_ID = TS.STATUS_ID
-    WHERE t.PROJECT_ID = ?
-    ${sprintId ? 'AND t.SPRINT_ID = ?' : ''}
-    ORDER BY t.TASK_ID DESC
-  `;
+//   const query = `
+//     SELECT 
+//       t.TASK_ID,
+//       t.TITLE,
+//       t.DESCRIPTION,
+//       t.ASSIGNED_TO,
+//       t.PROJECT_ID,
+//       t.SPRINT_ID,
+//       TS.STATUS_ID,
+//       TS.NAME as STATUS_NAME,
+//     FROM TASK t
+//     JOIN TASK_STATUS Ts ON t.STATUS_ID = TS.STATUS_ID
+//     WHERE t.PROJECT_ID = ?
+//     ${sprintId ? 'AND t.SPRINT_ID = ?' : ''}
+//     ORDER BY t.TASK_ID DESC
+//   `;
 
-  const queryParams = sprintId ? [projectId, sprintId] : [projectId];
+//   const queryParams = sprintId ? [projectId, sprintId] : [projectId];
 
-  db.query(query, queryParams, (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Failed to fetch tasks' });
-    }
-    res.status(200).json(results);
-  });
-});
+//   db.query(query, queryParams, (err, results) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).json({ error: 'Failed to fetch tasks' });
+//     }
+//     res.status(200).json(results);
+//   });
+// });
 
 // Create a new task
 router.post('/create', verifyToken, (req, res) => {
   const projectId = req.params.project_Id;
+  console.log(projectId);
   const {
     title,
     description,
@@ -106,63 +107,63 @@ router.post('/create', verifyToken, (req, res) => {
 });
 
 // Update task status
-router.patch('/:taskId/status', verifyToken, (req, res) => {
-  const { taskId } = req.params;
-  const { status_id } = req.body;
+// router.patch('/:taskId/status', verifyToken, (req, res) => {
+//   const { taskId } = req.params;
+//   const { status_id } = req.body;
 
-  if (![0, 1].includes(status_id)) {
-    return res.status(400).json({ error: 'Invalid status ID. Must be 0 or 1' });
-  }
+//   if (![0, 1].includes(status_id)) {
+//     return res.status(400).json({ error: 'Invalid status ID. Must be 0 or 1' });
+//   }
 
-  const query = `
-    UPDATE TASKS 
-    SET STATUS_ID = ?
-    WHERE TASK_ID = ?
-  `;
+//   const query = `
+//     UPDATE TASKS 
+//     SET STATUS_ID = ?
+//     WHERE TASK_ID = ?
+//   `;
 
-  db.query(query, [status_id, taskId], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Failed to update task status' });
-    }
+//   db.query(query, [status_id, taskId], (err, result) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).json({ error: 'Failed to update task status' });
+//     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({ error: 'Task not found' });
+//     }
 
-    res.status(200).json({
-      message: 'Task status updated successfully',
-      task_id: taskId,
-      status_id,
-      is_completed: status_id === 1
-    });
-  });
-});
+//     res.status(200).json({
+//       message: 'Task status updated successfully',
+//       task_id: taskId,
+//       status_id,
+//       is_completed: status_id === 1
+//     });
+//   });
+// });
 
 // Delete task
-router.delete('/:taskId', verifyToken, (req, res) => {
-  const { taskId } = req.params;
+// router.delete('/:taskId', verifyToken, (req, res) => {
+//   const { taskId } = req.params;
 
-  const query = `
-    DELETE FROM TASKS
-    WHERE TASK_ID = ?
-  `;
+//   const query = `
+//     DELETE FROM TASKS
+//     WHERE TASK_ID = ?
+//   `;
 
-  db.query(query, [taskId], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Failed to delete task' });
-    }
+//   db.query(query, [taskId], (err, result) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).json({ error: 'Failed to delete task' });
+//     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({ error: 'Task not found' });
+//     }
 
-    res.status(200).json({
-      message: 'Task deleted successfully',
-      task_id: taskId
-    });
-  });
-});
+//     res.status(200).json({
+//       message: 'Task deleted successfully',
+//       task_id: taskId
+//     });
+//   });
+// });
 
 module.exports = router;

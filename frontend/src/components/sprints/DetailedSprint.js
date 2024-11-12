@@ -3,12 +3,14 @@ import axios from 'axios';
 // eslint-disable-next-line
 import { useNavigate, useParams } from 'react-router-dom';
 import '../css/DetailedSprint.css';
+import CreateTask from '../Tasks/CreateTask';
 
 function DetailedSprint() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { projectId, sprintId } = useParams();
+  const [showCreateTask, setShowCreateTask] = useState(false);
   // const navigate = useNavigate();
 
   const fetchTasks = useCallback(async () => {
@@ -24,7 +26,7 @@ function DetailedSprint() {
           'Content-Type': 'application/json',
         },
       });
-      setTasks(response.data);
+      setTasks(response.data[1]);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -32,6 +34,7 @@ function DetailedSprint() {
     }
   },[projectId, sprintId])
 
+  
   useEffect(() => {
     if (projectId) {
       fetchTasks();
@@ -41,10 +44,22 @@ function DetailedSprint() {
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
+  const closeModal = () => {
+    setShowCreateTask(false);
+  };
+
+  
+
   return (
     <div className="tasks-container">
       <h2>Tasks for Project ID: {projectId}</h2>
       {sprintId && <h3>Sprint ID: {sprintId}</h3>}
+      <button 
+        className="create-sprint-btn"
+        onClick={() => setShowCreateTask(true)}
+      >
+        Create Task
+      </button>
       {tasks.length > 0 ? (
         <ul className="tasks-list">
           {tasks.map(task => (
@@ -52,7 +67,8 @@ function DetailedSprint() {
               <h4>{task.TITLE}</h4>
               <p><strong>Description:</strong> {task.DESCRIPTION}</p>
               <p><strong>Assigned To:</strong> {task.ASSIGNED_TO}</p>
-              <p><strong>Status:</strong> {task.STATUS_NAME}</p>
+              {/* change to status name */}
+              <p><strong>Status:</strong> {task.NAME}</p>
               <p><strong>Task ID:</strong> {task.TASK_ID}</p>
             </li>
           ))}
@@ -60,6 +76,16 @@ function DetailedSprint() {
       ) : (
         <p>No tasks available</p>
       )}
+      {showCreateTask && (
+          <div className="modal-container" onClick={closeModal}>
+            <CreateTask
+              projectId={projectId}
+              sprintId={sprintId}
+              onClose={closeModal}
+              onTaskCreated={fetchTasks}
+            />
+          </div>
+        )}
     </div>
   );
 }

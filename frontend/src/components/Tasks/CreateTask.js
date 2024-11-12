@@ -7,7 +7,7 @@ function CreateTask({ projectId, sprintId, onClose, onTaskCreated }) {
     title: '',
     description: '',
     assigned_to: '',
-    status_id: 0, // Default to 'in progress'
+    status_id: 1, // Default to 'in progress'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,11 +31,8 @@ function CreateTask({ projectId, sprintId, onClose, onTaskCreated }) {
     try {
       const token = sessionStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:5000/api/project/${projectId}/tasks/create`,
-        {
-          ...formData,
-          sprint_id: sprintId
-        },
+        `http://localhost:5000/api/project/${projectId}/sprint/${sprintId}/task/create`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,

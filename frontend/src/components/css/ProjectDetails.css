@@ -126,17 +126,3 @@ li {
     }
 }
 
-.create-task-btn {
-    margin-top: 10px;
-    padding: 6px 12px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .create-task-btn:hover {
-    background-color: #1976D2;
-  }

@@ -23,7 +23,6 @@ const verifyToken = (req, res, next) => {
 // Get all sprints for a specific project
 router.get('/', verifyToken, (req, res) => {
   const projectId = req.params.projectId;
-  const sprintId = req.params.sprintId;
 
   const query = `
     SELECT 
@@ -98,5 +97,25 @@ router.post('/create', verifyToken, (req, res) => {
     });
   });
 });
+
+
+// fetch all the sprint details
+router.get('/:sprintId', verifyToken, (req, res) => {
+  const sprintId = req.params.sprintId;
+  const query = `
+      call fetch_sprintTasks(?);
+    `;
+
+
+  db.query(query,[sprintId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch sprints' });
+    }
+    res.status(200).json(results.slice(0,-1));
+  });
+});
+
+router.use('/:sprintId/task', require('./tasks'));
 
 module.exports = router;
