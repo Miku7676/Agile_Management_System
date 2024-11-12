@@ -45,8 +45,8 @@ The system employs Agile development for its iterative approach, flexibility, co
 3. **Environment Setup:**:
        Configure environment variables in a .env file with database credentials, API keys, etc.
 4. **Database Setup:**:
-     - Item 1 Ensure the database is running and configured with necessary schemas.
-     - Item 2 Run migration scripts if applicable.
+     - Ensure the database is running and configured with necessary schemas.
+     - Run migration scripts if applicable.
 
 ## Running The Application
 
@@ -64,6 +64,7 @@ To start the backend and frontend, follow these steps:
     ```bash
     cd frontend
     npm start
+    
 **Access the Application**:
 - Backend should be running on the designated port (e.g., `http://localhost:5000`).
 - Frontend can be accessed at `http://localhost:3000`.
@@ -72,8 +73,9 @@ To start the backend and frontend, follow these steps:
 - **User Login**:
    Register or log in.
 **Project and Task Management**: 
-   
-        Create projects, add tasks, and organize them into sprints.
+  Create projects, add tasks, and organize them into sprints.
 **Tracking Progress**: 
- 
-        Use the sprint board to monitor task progression.
+  Use the sprint board to monitor task progression.
+
+## License
+This project is licensed under the MIT License. See the #LICENSE file for more details.
