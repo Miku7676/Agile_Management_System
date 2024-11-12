@@ -78,4 +78,4 @@ To start the backend and frontend, follow these steps:
   Use the sprint board to monitor task progression.
 
 ## License
-This project is licensed under the MIT License. See the #LICENSE file for more details.
+This project is licensed under the MIT License. See the [LICENSE](#LICENSE) file for more details.
