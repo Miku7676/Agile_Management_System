@@ -106,6 +106,68 @@ router.post('/create', verifyToken, (req, res) => {
     }
   );
 });
+router.post('/delete', verifyToken, (req, res) => {
+  const projectId = req.params.project_Id;
+  const sprint_Id = req.params.sprintId;
+  const {taskId} = req.body
+  console.log(taskId);
+  // Validation
+  if (!taskId) {
+    return res.status(400).json({ 
+      error: 'TaskId not found' 
+    });
+  }
+
+  const deletetaskquery = `
+    delete from task where task_id = ?
+  `;
+
+  db.query(
+    deletetaskquery,
+    [taskId],
+    (err, result) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Failed to create task' });
+      }
+
+      const taskId = result
+      res.status(201).json({
+        message: 'Task deleted successfully',
+      });
+    }
+  );
+});
+
+router.post('/complete', verifyToken, (req, res) => {
+  const {taskId} = req.body
+  // Validation
+  if (!taskId) {
+    return res.status(400).json({ 
+      error: 'TaskId not found' 
+    });
+  }
+
+  const completetaskquery = `
+    update task set status_id = 1 where task_id = ?
+  `;
+
+  db.query(
+    completetaskquery,
+    [taskId],
+    (err, result) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Failed to create task' });
+      }
+
+      const taskId = result
+      res.status(201).json({
+        message: 'Task completed successfully',
+      });
+    }
+  );
+})
 
 // Update task status
 // router.patch('/:taskId/status', verifyToken, (req, res) => {

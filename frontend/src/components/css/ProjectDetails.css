@@ -126,3 +126,39 @@ li {
     }
 }
 
+/* Styles for Sprint Items */
+.sprint-item {
+    background-color: #f5f5f5; /* Default background */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .sprint-item:hover {
+    background-color: #e0e0e0; /* Light gray on hover */
+  }
+  
+  /* Delete button styles */
+  .delete-sprint-btn {
+    background: none;
+    border: none;
+    color: #f44336;  /* Red color */
+    font-size: 1.2rem; /* Icon size */
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .delete-sprint-btn:hover {
+    color: #d32f2f;  /* Darker red color on hover */
+  }
+  
+  /* Make sure the button doesn't take up space when not visible */
+  .delete-sprint-btn:focus {
+    outline: none;
+  }
+  

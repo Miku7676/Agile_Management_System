@@ -116,6 +116,41 @@ router.get('/:sprintId', verifyToken, (req, res) => {
   });
 });
 
+router.post('/delete', verifyToken, (req, res) => {
+  const projectId = req.params.project_Id;
+  const userId = req.userId;
+  const { sprintId } = req.body;
+
+  // Validation
+  if (!sprintId) {
+    console.log('Missing required fields');
+    return res.status(400).json({ 
+      error: 'Sprint ID is required' 
+    });
+  }
+
+
+  const insertQuery = `
+    delete from sprint where SPRINT_ID = ?;
+  `;
+
+  db.query(insertQuery, [sprintId], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      if (err.errno === 1452) {
+        return res.status(404).json({ error: 'Project does not exist' });
+      }
+      return res.status(500).json({ error: 'Failed to create sprint' });
+    }
+
+    console.log(result);
+    res.status(201).json({ 
+      message: 'Sprint deleted successfully'
+    });
+  });
+});
+
+
 router.use('/:sprintId/task', require('./tasks'));
 
 module.exports = router;

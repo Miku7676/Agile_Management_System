@@ -41,9 +41,8 @@ function Navbar() {
           {token && (
             <>
               <NavLink to="/">Dashboard</NavLink>
-              <NavLink to="/tasks">Tasks</NavLink>
-              <NavLink to="/sprints">Sprints</NavLink>
-              <NavLink to="/users">Users</NavLink>
+              {/* <NavLink to="/tasks">Tasks</NavLink>
+              <NavLink to="/sprints">Sprints</NavLink> */}
             </>
           )}
         </div>

@@ -100,7 +100,7 @@ USE `project_management_system`$$
 CREATE DEFINER=`devansh`@`%` PROCEDURE `createTask`(IN p_title VARCHAR(100), IN p_description VARCHAR(100),in p_assigned_to VARCHAR(25),in
 p_project_id INT, in p_sprint_id INT, in p_status_id int )
 BEGIN
-	INSERT INTO TASKS (
+	INSERT INTO TASK (
         TITLE,
         DESCRIPTION,
         ASSIGNED_TO,
